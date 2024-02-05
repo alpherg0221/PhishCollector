@@ -16,7 +16,7 @@ type RequestBody = {
 }
 
 type ResponseBody = {
-  matches: {
+  matches?: {
     threatType: ("THREAT_TYPE_UNSPECIFIED" | "MALWARE" | "SOCIAL_ENGINEERING" | "UNWANTED_SOFTWARE" | "POTENTIALLY_HARMFUL_APPLICATION")[],
     platformTypes: ("PLATFORM_TYPE_UNSPECIFIED" | "WINDOWS" | "LINUX" | "ANDROID" | "OSX" | "IOS" | "ANY_PLATFORM")[],
     threatEntryTypes: ("URL")[],
@@ -53,7 +53,7 @@ export const checkGSB = async (urlInfo: UrlInfo[]) => {
   return urlInfo.map(urlInfo => ({
     url: urlInfo.url,
     warning: {
-      gsb: gsbResponse.matches.map(match => match.threat.url).includes(urlInfo.url) ? Warning.Phishing : Warning.Safe,
+      gsb: gsbResponse.matches?.map(match => match.threat.url).includes(urlInfo.url) ? Warning.Phishing : Warning.Safe,
       browser: urlInfo.warning.browser,
     }
   }) as UrlInfo);
