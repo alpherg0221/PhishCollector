@@ -55,7 +55,8 @@ function Home() {
 
   const onURLPaste = (idx: number, data: string) => {
     // 複数URLを分割してUrlInfoに変換
-    const urlInfo = data.split(" ").map(url => ({
+    // eslint-disable-next-line no-control-regex
+    const urlInfo = data.split(RegExp(" |\r|\n|\r\n")).map(url => ({
       url: url,
       target: "",
       warning: { gsb: Warning.Unknown, browser: Warning.Unknown }
