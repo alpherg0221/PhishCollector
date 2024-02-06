@@ -65,7 +65,8 @@ function Home() {
     // 新しい状態の作成
     const newUrlInfo = [...state.urlInfo.map((info, index) => index === idx ? urlInfo[0] : info), ...urlInfo.slice(1)] // 値の更新と追加
       .map(info => ({ ...info, url: formatURL(info.url) }) as UrlInfo)  // URLを整形
-      .filter(info => info.url.includes("http"));  // URL以外を除去
+      .filter(info => info.url.includes("http") || RegExp("[A-Za-z]+.[A-Za-z]+").test(info.url))  // URL以外を除去
+      .map(info => ({ ...info, url: !info.url.includes("http") ? `https://${ info.url }` : info.url }) as UrlInfo);  // httpsを追加
 
     // 状態を更新
     state.update({ urlInfo: newUrlInfo });
