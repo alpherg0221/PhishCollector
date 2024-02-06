@@ -172,7 +172,7 @@ const ControlButtons = (props: {
 
       <ToolbarDivider/>
 
-      <ToolbarButton icon={ <MdOpenInNew/> } onClick={ props.onOpenAll }>Open All Urls</ToolbarButton>
+      <ToolbarButton icon={ <MdOpenInNew/> } onClick={ props.onOpenAll }>Open All URLs</ToolbarButton>
     </Toolbar>
   );
 }
