@@ -156,8 +156,8 @@ const ControlButtons = (props: {
 
   return (
     <Toolbar>
-      <ToolbarButton icon={ <MdCopyAll/> } onClick={ props.onCopy }>Copy URL</ToolbarButton>
-      <ToolbarButton icon={ <MdDeleteForever/> } onClick={ props.onDelete }>Delete URL</ToolbarButton>
+      <ToolbarButton icon={ <MdCopyAll/> } onClick={ props.onCopy }>Copy URLs</ToolbarButton>
+      <ToolbarButton icon={ <MdDeleteForever/> } onClick={ props.onDelete }>Delete URLs</ToolbarButton>
 
       <ToolbarDivider/>
 
