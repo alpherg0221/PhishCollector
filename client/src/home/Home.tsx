@@ -13,6 +13,7 @@ import {
   Input,
   InputProps,
   LargeTitle,
+  Subtitle2,
   Text,
   Toolbar,
   ToolbarButton,
@@ -91,7 +92,10 @@ function Home() {
         { /*タイトル*/ }
         <StackShim horizontal verticalAlign={ "center" } tokens={ { childrenGap: 12 } }>
           <MdSailing style={ { width: 52, height: 52, color: "#38B48B" } }/>
-          <LargeTitle>Phish Collector</LargeTitle>
+          <div>
+            <LargeTitle>Phish Collector </LargeTitle>
+            <Subtitle2>v1.1.1</Subtitle2>
+          </div>
         </StackShim>
 
         <ControlButtons
