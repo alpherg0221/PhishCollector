@@ -1,6 +1,6 @@
 function Collected() {
   return (
-    <div> 今後追加予定 </div>
+    <div style={ { width: "100%", height: "100%" } }> 今後追加予定 </div>
   );
 }
 
