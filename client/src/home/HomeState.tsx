@@ -4,6 +4,12 @@ export enum Warning {
   Safe, Unknown, Phishing,
 }
 
+export const warningOrder = Object.values(Warning);
+
+export enum SortBy {
+  Url, Target, GSB, Browser,
+}
+
 export type UrlInfo = {
   url: string,
   target: string,

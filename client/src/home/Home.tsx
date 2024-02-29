@@ -1,5 +1,5 @@
 import './Home.css'
-import {defaultHomeState, UrlInfo, useHomeState, Warning} from "./HomeState.tsx";
+import {defaultHomeState, SortBy, UrlInfo, useHomeState, Warning, warningOrder} from "./HomeState.tsx";
 import {StackShim} from "@fluentui/react-migration-v8-v9";
 import {
   Body1Strong,
@@ -14,7 +14,8 @@ import {
   InputProps,
   LargeTitle,
   Text,
-  Toolbar, ToolbarButton,
+  Toolbar,
+  ToolbarButton,
   ToolbarDivider,
   Tooltip
 } from "@fluentui/react-components";
@@ -24,9 +25,12 @@ import {formatURL} from "../utils/url.ts";
 import {MouseEventHandler, useRef} from "react";
 import {
   MdAddLink,
-  MdClose, MdContentCopy,
-  MdCopyAll, MdCrisisAlert,
-  MdDeleteForever, MdDoneAll,
+  MdClose,
+  MdContentCopy,
+  MdCopyAll,
+  MdCrisisAlert,
+  MdDeleteForever,
+  MdDoneAll,
   MdHelp,
   MdOpenInNew,
   MdSailing,
@@ -99,12 +103,12 @@ function Home() {
         <StackShim tokens={ { childrenGap: 12 } }>
           { /*URL入力フィールドのヘッダー*/ }
           <StackShim horizontal verticalAlign={ "center" } tokens={ { childrenGap: 8 } }>
-            <Body1Strong style={ { width: "35svw", textAlign: "center" } }> Phishing URL </Body1Strong>
-            <Body1Strong style={ { width: "20svw", textAlign: "center" } }> Target Service </Body1Strong>
+            <SortableTitle width={ "35svw" } sortBy={ SortBy.Url }> Phishing URL </SortableTitle>
+            <SortableTitle width={ "20svw" } sortBy={ SortBy.Target }> Target Service </SortableTitle>
             <Toolbar>
-              <Body1Strong style={ { width: "40px", textAlign: "center" } }> GSB </Body1Strong>
+              <SortableTitle width={ "40px" } sortBy={ SortBy.GSB }> GSB </SortableTitle>
               <ToolbarDivider/>
-              <Body1Strong style={ { width: "40px", textAlign: "center" } }> 警告 </Body1Strong>
+              <SortableTitle width={ "40px" } sortBy={ SortBy.Browser }> 警告 </SortableTitle>
               <ToolbarDivider/>
               <Body1Strong style={ { width: "120px", textAlign: "center" } }> Actions </Body1Strong>
             </Toolbar>
@@ -175,6 +179,31 @@ const ControlButtons = (props: {
       <ToolbarButton icon={ <MdOpenInNew/> } onClick={ props.onOpenAll }>Open All URLs</ToolbarButton>
     </Toolbar>
   );
+}
+
+const SortableTitle = (props: { width: string, children: string, sortBy?: SortBy }) => {
+  const state = useHomeState();
+
+  return (
+    <Body1Strong style={ { width: props.width, textAlign: "center", cursor: "pointer" } } onClick={ () => {
+      switch (props.sortBy) {
+        case SortBy.Url:
+          state.update({ urlInfo: state.urlInfo.toSorted((a, b) => a.url.localeCompare(b.url)) });
+          break;
+        case SortBy.Target:
+          state.update({ urlInfo: state.urlInfo.toSorted((a, b) => a.target.localeCompare(b.target)) });
+          break;
+        case SortBy.GSB:
+          state.update({ urlInfo: state.urlInfo.toSorted((a, b) => warningOrder.indexOf(a.warning.gsb) - warningOrder.indexOf(b.warning.gsb)) });
+          break;
+        case SortBy.Browser:
+          state.update({ urlInfo: state.urlInfo.toSorted((a, b) => warningOrder.indexOf(a.warning.browser) - warningOrder.indexOf(b.warning.browser)) });
+          break;
+      }
+    } }>
+      { props.children }
+    </Body1Strong>
+  )
 }
 
 const URLInputField = (props: {
