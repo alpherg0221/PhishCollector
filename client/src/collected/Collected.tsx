@@ -1,6 +1,13 @@
 function Collected() {
   return (
-    <div style={ { width: "100%", height: "100%" } }> 今後追加予定 </div>
+    <div style={ {
+      minHeight: "100svh",
+      height: "auto",
+      width: "100%",
+      display: "grid",
+      justifyContent: "center",
+      alignItems: "center"
+    } }> 今後追加予定 </div>
   );
 }
 

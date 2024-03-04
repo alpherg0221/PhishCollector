@@ -18,18 +18,18 @@ export const AppDrawer = (props: { children?: JSX.Element, current: Route, }) =>
 
   return (
     <StackShim horizontal horizontalAlign={ "start" } verticalAlign={ "start" }>
-      <InlineDrawer open style={ { minHeight: "100svh", height: "auto" } }>
+      <InlineDrawer open style={ { minHeight: "100svh", height: "auto", minWidth: 230 } }>
         <DrawerHeader style={ { marginBottom: 24 } }>
           <DrawerHeaderTitle> Menu </DrawerHeaderTitle>
         </DrawerHeader>
 
-        <DrawerBody style={ { textAlign: "center" } }>
+        <DrawerBody style={ { textAlign: "center", padding: 0 } }>
           { items.map((item) =>
             <Button
               appearance={ props.current === item.route ? "primary" : "transparent" }
               icon={ item.icon }
               size={ "large" }
-              style={ { width: "220px", marginBottom: 24 } }
+              style={ { width: 220, marginBottom: 24 } }
               children={ item.name }
               onClick={ () => window.location.href = `../${item.route.toString()}/` }
             />
