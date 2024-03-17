@@ -1,0 +1,11 @@
+version: "3"
+services:
+  collector:
+    build: .
+    volumes:
+      - ./:/home/collector
+      - /home/ywatanabe/PhishData:/home/collector/PhishData
+    ports:
+      - "8080:8080"
+    tty: true
+    stdin_open: true
