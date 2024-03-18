@@ -5,7 +5,7 @@ import {MdCalendarMonth, MdCrisisAlert, MdLink, MdRefresh, MdSailing, MdVerified
 import {
   Body2,
   Button, Divider,
-  LargeTitle,
+  LargeTitle, Subtitle1,
   Subtitle2, Tooltip,
 } from "@fluentui/react-components";
 import {FoodFishFilled} from "@fluentui/react-icons";
@@ -27,7 +27,7 @@ function Collected() {
           <MdSailing style={ { width: 52, height: 52, color: "#38B48B" } }/>
           <div>
             <LargeTitle>Phish Collector </LargeTitle>
-            <Subtitle2>v1.1.2</Subtitle2>
+            <Subtitle2>v1.2.0</Subtitle2>
           </div>
         </StackShim>
 
@@ -40,6 +40,9 @@ function Collected() {
         />
 
         <StackShim tokens={ { childrenGap: 12 } }>
+          <PhishInfoHeader/>
+          <Divider appearance={ "brand" }/>
+
           { state.phishInfo.map(info => (
             <StackShim tokens={ { childrenGap: 12 } }>
               <PhishInfoRow info={ info }/>
@@ -52,26 +55,42 @@ function Collected() {
   );
 }
 
+const PhishInfoHeader = () => {
+  return (
+    <StackShim horizontal verticalAlign={ "center" } tokens={ { childrenGap: 24, padding: "0px 48px 0px 48px" } }>
+      <Subtitle1 style={ { width: 206 } }> DATE </Subtitle1>
+      <Subtitle1 style={ { width: "calc(26px + 35svw)" } }> URL </Subtitle1>
+      <Subtitle1 style={ { width: 166 } }> TARGET </Subtitle1>
+      <Subtitle1 style={ { width: 44 } }> GSB </Subtitle1>
+    </StackShim>
+  );
+}
+
 const PhishInfoRow = (props: { info: PhishInfo }) => {
   return (
     <StackShim horizontal verticalAlign={ "center" } tokens={ { childrenGap: 24, padding: "0px 48px 0px 48px" } }>
       <StackShim horizontal verticalAlign={ "center" }>
         <MdCalendarMonth size={ 18 } style={ { marginRight: 8 } }/>
-        <Body2>{ props.info.date }</Body2>
+        <Body2 style={ { width: 180 } }>{ props.info.date }</Body2>
       </StackShim>
+
       <StackShim horizontal verticalAlign={ "center" }>
         <MdLink size={ 18 } style={ { marginRight: 8 } }/>
         <Tooltip content={ props.info.url } relationship={ "label" } withArrow>
           <Body2 style={ { width: "35svw" } } truncate wrap={ false }>{ props.info.url }</Body2>
         </Tooltip>
       </StackShim>
+
       <StackShim horizontal verticalAlign={ "center" }>
         <MdCrisisAlert size={ 18 } style={ { marginRight: 8 } }/>
         <Body2 style={ { width: 140 } }>{ props.info.target }</Body2>
       </StackShim>
-      { props.info.gsb
-        ? <FoodFishFilled fontSize={ 18 } color={ "#FF0000" }/>
-        : <MdVerified size={ 18 } color={ "#00B379" }/> }
+
+      <StackShim horizontal verticalAlign={ "center" } tokens={ { padding: "0px 12px 0px 12px" } }>
+        { props.info.gsb
+          ? <FoodFishFilled fontSize={ 18 } color={ "#FF0000" }/>
+          : <MdVerified size={ 20 } color={ "#00B379" }/> }
+      </StackShim>
     </StackShim>
   );
 }
