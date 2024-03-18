@@ -99,7 +99,7 @@ const PhishInfoRow = (props: { info: PhishInfo }) => {
           onClick={ async () => {
             const server = "http:///www.az.lab.uec.ac.jp:8080/~ywatanabe/PhishCollector/api/collected/download";
             const downloadUrl = await fetch(`${ server }?url=${ props.info.url }`).then(res => res.text());
-            window.open(downloadUrl, "_blank");
+            window.open(downloadUrl.slice(1, downloadUrl.length -1), "_blank");
           } }
         />
       </StackShim>
