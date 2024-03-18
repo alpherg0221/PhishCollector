@@ -1,7 +1,7 @@
 import "./Collected.css";
 import {PhishInfo, useCollectedState} from "./CollectedState.ts";
 import {StackShim} from "@fluentui/react-migration-v8-v9";
-import {MdCalendarMonth, MdCrisisAlert, MdLink, MdRefresh, MdSailing, MdVerified} from "react-icons/md";
+import {MdCalendarMonth, MdCrisisAlert, MdDownload, MdLink, MdRefresh, MdSailing, MdVerified} from "react-icons/md";
 import {
   Body2,
   Button, Divider,
@@ -88,8 +88,20 @@ const PhishInfoRow = (props: { info: PhishInfo }) => {
 
       <StackShim horizontal verticalAlign={ "center" } tokens={ { padding: "0px 12px 0px 12px" } }>
         { props.info.gsb
-          ? <FoodFishFilled fontSize={ 18 } color={ "#FF0000" }/>
+          ? <FoodFishFilled fontSize={ 20 } color={ "#FF0000" }/>
           : <MdVerified size={ 20 } color={ "#00B379" }/> }
+      </StackShim>
+
+      <StackShim horizontal verticalAlign={ "center" } tokens={ { padding: "0px 0px 0px 12px" } }>
+        <Button
+          icon={ <MdDownload size={ 20 }/> }
+          size={ "small" }
+          onClick={ async () => {
+            const server = "http:///www.az.lab.uec.ac.jp:8080/~ywatanabe/PhishCollector/api/collected/download";
+            const downloadUrl = await fetch(`${ server }?url=${ props.info.url }`).then(res => res.text());
+            window.open(downloadUrl, "_blank");
+          } }
+        />
       </StackShim>
     </StackShim>
   );

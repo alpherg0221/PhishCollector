@@ -1,4 +1,7 @@
 import os
+import subprocess
+import zipfile
+from urllib.parse import urlparse
 
 from fastapi import APIRouter
 from pydantic import BaseModel
@@ -48,4 +51,14 @@ async def phish_list():
 
 @router.get("/download", summary="指定したフィッシングサイトをダウンロード", response_model=str)
 async def phish_download(url: str = ""):
-    return f"{download_path}{url}/phish.zip"
+    domain = urlparse(url).netloc
+
+    subprocess.run([
+        "7z",
+        "a",
+        "-p$|EVa%FL%JUqACc$(E4KjK|n",
+        f"/home/collector/tmp/{domain}.zip",
+        f"/home/collector/PhishData/{domain}/"
+    ])
+
+    return f"{download_path}{domain}.zip"
