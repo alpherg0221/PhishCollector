@@ -4,8 +4,7 @@ services:
     build: .
     volumes:
       - ./:/home/collector
-      - /home/ywatanabe/PhishData:/home/collector/PhishData
-      - /home/ywatanabe/public_html/tmp/:/home/collector/tmp/
+      - /home/ywatanabe/PhishData:/home/tmp/PhishData
     ports:
       - "8080:8080"
     tty: true

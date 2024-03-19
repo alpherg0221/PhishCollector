@@ -1,9 +1,10 @@
 import os
+import shutil
 import subprocess
-import zipfile
 from urllib.parse import urlparse
 
 from fastapi import APIRouter
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
 from src.server import download_path
@@ -23,7 +24,7 @@ async def phish_list():
     phish_info_list = []
 
     # フィッシングデータがあるディレクトリ
-    data_dir = "/home/collector/PhishData"
+    data_dir = "/home/tmp/PhishData"
 
     # data_dir内のディレクトリのみを抽出 (ファイルを除外)
     files = os.listdir(data_dir)
@@ -49,7 +50,7 @@ async def phish_list():
     return phish_info_list
 
 
-@router.get("/download", summary="指定したフィッシングサイトをダウンロード", response_model=str)
+@router.get("/download", summary="指定したフィッシングサイトをダウンロード")
 async def phish_download(url: str = ""):
     domain = urlparse(url).netloc
 
@@ -57,8 +58,21 @@ async def phish_download(url: str = ""):
         "7z",
         "a",
         "-p$|EVa%FL%JUqACc$(E4KjK|n",
-        f"/home/collector/tmp/{domain}.zip",
-        f"/home/collector/PhishData/{domain}/"
+        f"/home/download/{domain}.zip",
+        f"/home/tmp/PhishData/{domain}/"
     ])
 
-    return f"{download_path}{domain}.zip"
+    return FileResponse(f"/home/download/{domain}.zip", filename=f"{domain}.zip")
+
+
+@router.get("/downloadAll", summary="全てのフィッシングサイトをダウンロード")
+async def phish_download_all():
+    subprocess.run([
+        "7z",
+        "a",
+        "-p$|EVa%FL%JUqACc$(E4KjK|n",
+        f"/home/download/phish.zip",
+        f"/home/tmp/PhishData"
+    ])
+
+    return FileResponse(f"/home/download/phish.zip", filename="phish.zip")

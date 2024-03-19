@@ -1,19 +1,41 @@
 import "./Collected.css";
 import {PhishInfo, useCollectedState} from "./CollectedState.ts";
 import {StackShim} from "@fluentui/react-migration-v8-v9";
-import {MdCalendarMonth, MdCrisisAlert, MdDownload, MdLink, MdRefresh, MdSailing, MdVerified} from "react-icons/md";
+import {
+  MdCalendarMonth,
+  MdCrisisAlert,
+  MdDownload,
+  MdLink,
+  MdRefresh,
+  MdSailing,
+  MdVerified
+} from "react-icons/md";
 import {
   Body2,
-  Button, Divider,
-  LargeTitle, Subtitle1,
-  Subtitle2, Tooltip,
+  Button,
+  Divider,
+  LargeTitle,
+  Subtitle1,
+  Subtitle2,
+  Toolbar,
+  ToolbarButton,
+  ToolbarDivider,
+  Tooltip,
 } from "@fluentui/react-components";
 import {FoodFishFilled} from "@fluentui/react-icons";
+
+const downloadData = async (url: string) => {
+  window.open(`http:///www.az.lab.uec.ac.jp:8080/~ywatanabe/PhishCollector/api/collected/download?url=${ url }`, "_blank");
+}
+
+const downloadDataAll = async () => {
+  window.open("http:///www.az.lab.uec.ac.jp:8080/~ywatanabe/PhishCollector/api/collected/downloadAll", "_blank");
+}
 
 function Collected() {
   const state = useCollectedState();
 
-  const fetchData = async () => {
+  const loadData = async () => {
     const server = "http:///www.az.lab.uec.ac.jp:8080/~ywatanabe/PhishCollector/api/collected/list";
     const phishInfo: PhishInfo[] = await fetch(server, { mode: "cors" }).then(res => res.json());
     state.update({ phishInfo: phishInfo.toSorted((a, b) => -a.date.localeCompare(b.date)) });
@@ -31,13 +53,23 @@ function Collected() {
           </div>
         </StackShim>
 
-        <Button
-          appearance={ "primary" }
-          children={ "Reload Data" }
-          icon={ <MdRefresh/> }
-          onClick={ async () => await fetchData() }
-          size={ "large" }
-        />
+        <StackShim>
+          <Toolbar>
+            <ToolbarButton
+              children={ "Download Data" }
+              icon={ <MdDownload/> }
+              onClick={ async () => await downloadDataAll() }
+            />
+
+            <ToolbarDivider/>
+
+            <ToolbarButton
+              children={ "Load Data" }
+              icon={ <MdRefresh/> }
+              onClick={ async () => await loadData() }
+            />
+          </Toolbar>
+        </StackShim>
 
         <StackShim tokens={ { childrenGap: 12 } }>
           <PhishInfoHeader/>
@@ -96,11 +128,7 @@ const PhishInfoRow = (props: { info: PhishInfo }) => {
         <Button
           icon={ <MdDownload size={ 20 }/> }
           size={ "small" }
-          onClick={ async () => {
-            const server = "http:///www.az.lab.uec.ac.jp:8080/~ywatanabe/PhishCollector/api/collected/download";
-            const downloadUrl = await fetch(`${ server }?url=${ props.info.url }`).then(res => res.text());
-            window.open(downloadUrl.slice(1, downloadUrl.length -1), "_blank");
-          } }
+          onClick={ async () => await downloadData(props.info.url) }
         />
       </StackShim>
     </StackShim>
