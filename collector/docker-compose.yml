@@ -3,7 +3,8 @@ services:
   collector:
     build: .
     volumes:
-      - ./:/home/collector
+      - ./src:/home/collector/src
+      - ./pyproject.toml:/home/collector/pyproject.toml
       - /home/ywatanabe/PhishData:/home/tmp/PhishData
     ports:
       - "8080:8080"

@@ -1,12 +1,15 @@
 FROM python:3.12.1-slim-bullseye
 
+RUN apt update
+RUN apt install -y p7zip-full curl
+
 RUN adduser collector
+USER collector
 WORKDIR /home/collector
 
-RUN apt update
-RUN apt install -y p7zip-full
+RUN curl -sSL https://install.python-poetry.org | python3 -
+ENV PATH=$PATH:/home/collector/.local/bin
+RUN poetry config virtualenvs.in-project true
 
-RUN pip install --upgrade pip
-RUN pip install  fastapi "uvicorn[standard]"
-
-CMD ["uvicorn", "src.app:app", "--host", "0.0.0.0", "--port", "8080", "--reload"]
+COPY ./startup.sh /tmp/startup.sh
+ENTRYPOINT ["/bin/bash", "/tmp/startup.sh"]

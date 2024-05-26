@@ -1,5 +1,4 @@
 import os
-import shutil
 import subprocess
 from urllib.parse import urlparse
 
@@ -7,7 +6,6 @@ from fastapi import APIRouter
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
-from src.server import download_path
 
 router = APIRouter()
 
