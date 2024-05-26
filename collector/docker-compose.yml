@@ -7,6 +7,6 @@ services:
       - ./pyproject.toml:/home/collector/pyproject.toml
       - /home/ywatanabe/PhishData:/home/tmp/PhishData
     ports:
-      - "8080:8080"
+      - "30080:8080"
     tty: true
     stdin_open: true
