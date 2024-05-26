@@ -21,6 +21,7 @@
     width: 100%;
     display: grid;
     justify-content: center;
+    overflow: auto;
 }
 
 .maxSize {
