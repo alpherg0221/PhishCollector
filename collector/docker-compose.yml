@@ -1,0 +1,12 @@
+version: "3"
+services:
+  collector:
+    build: .
+    volumes:
+      - ./src:/home/collector/src
+      - ./pyproject.toml:/home/collector/pyproject.toml
+      - /home/ywatanabe/PhishData:/home/tmp/PhishData
+    ports:
+      - "30080:8080"
+    tty: true
+    stdin_open: true

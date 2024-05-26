@@ -94,7 +94,7 @@ function Home() {
           <MdSailing style={ { width: 52, height: 52, color: "#38B48B" } }/>
           <div>
             <LargeTitle>Phish Collector </LargeTitle>
-            <Subtitle2>v1.1.2</Subtitle2>
+            <Subtitle2>v1.2.0</Subtitle2>
           </div>
         </StackShim>
 
