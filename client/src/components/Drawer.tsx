@@ -1,6 +1,5 @@
 import {Button, Divider, DrawerBody, DrawerHeader, DrawerHeaderTitle, InlineDrawer} from "@fluentui/react-components";
 import {JSX} from "react";
-import {StackShim} from "@fluentui/react-migration-v8-v9";
 import {MdHome, MdPhishing, MdSettings} from "react-icons/md";
 
 export enum Route {
@@ -17,8 +16,8 @@ export const AppDrawer = (props: { children?: JSX.Element, current: Route, }) =>
   ];
 
   return (
-    <StackShim horizontal horizontalAlign={ "start" } verticalAlign={ "start" }>
-      <InlineDrawer open style={ { minHeight: "100svh", height: "auto", minWidth: 230 } }>
+    <div style={ { display: "flex", height: "100svh" } }>
+      <InlineDrawer open position="start">
         <DrawerHeader style={ { marginBottom: 24 } }>
           <DrawerHeaderTitle> Menu </DrawerHeaderTitle>
         </DrawerHeader>
@@ -31,7 +30,7 @@ export const AppDrawer = (props: { children?: JSX.Element, current: Route, }) =>
               size={ "large" }
               style={ { width: 220, marginBottom: 24 } }
               children={ item.name }
-              onClick={ () => window.location.href = `../${item.route.toString()}/` }
+              onClick={ () => window.location.href = `../${ item.route.toString() }/` }
             />
           ) }
         </DrawerBody>
@@ -40,6 +39,6 @@ export const AppDrawer = (props: { children?: JSX.Element, current: Route, }) =>
       <Divider vertical style={ { minHeight: "100svh", height: "auto" } }/>
 
       { props.children }
-    </StackShim>
+    </div>
   );
 }
