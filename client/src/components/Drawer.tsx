@@ -1,6 +1,13 @@
-import {Button, Divider, DrawerBody, DrawerHeader, DrawerHeaderTitle, InlineDrawer} from "@fluentui/react-components";
+import {
+  Button,
+  Divider,
+  DrawerBody,
+  InlineDrawer,
+  Tooltip
+} from "@fluentui/react-components";
 import {JSX} from "react";
 import {MdHome, MdPhishing, MdSettings} from "react-icons/md";
+import {StackShim} from "@fluentui/react-migration-v8-v9";
 
 export enum Route {
   Home = "home",
@@ -17,22 +24,21 @@ export const AppDrawer = (props: { children?: JSX.Element, current: Route, }) =>
 
   return (
     <div style={ { display: "flex", height: "100svh" } }>
-      <InlineDrawer open position="start">
-        <DrawerHeader style={ { marginBottom: 24 } }>
-          <DrawerHeaderTitle> Menu </DrawerHeaderTitle>
-        </DrawerHeader>
-
+      <InlineDrawer open style={ { minWidth: 64, maxWidth: 64, width: 64 } }>
         <DrawerBody style={ { textAlign: "center", padding: 0 } }>
-          { items.map((item) =>
-            <Button
-              appearance={ props.current === item.route ? "primary" : "transparent" }
-              icon={ item.icon }
-              size={ "large" }
-              style={ { width: 220, marginBottom: 24 } }
-              children={ item.name }
-              onClick={ () => window.location.href = `../${ item.route.toString() }/` }
-            />
-          ) }
+          <StackShim className="centering" horizontalAlign="center" verticalAlign="center">
+            { items.map((item) =>
+              <Tooltip content={ item.name } relationship="label">
+                <Button
+                  appearance={ props.current === item.route ? "primary" : "transparent" }
+                  icon={ item.icon }
+                  size={ "large" }
+                  style={ { width: 220, marginBottom: 24 } }
+                  onClick={ () => window.location.href = `../${ item.route.toString() }/` }
+                />
+              </Tooltip>
+            ) }
+          </StackShim>
         </DrawerBody>
       </InlineDrawer>
 

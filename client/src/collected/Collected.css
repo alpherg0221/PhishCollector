@@ -1,3 +1,11 @@
+* {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+*::-webkit-scrollbar {
+    display: none;
+}
+
 .centering {
     min-height: 100svh;
     height: auto;
@@ -13,6 +21,7 @@
     width: 100%;
     display: grid;
     justify-content: center;
+    overflow: auto;
 }
 
 .maxSize {

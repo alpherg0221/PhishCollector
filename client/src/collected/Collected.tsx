@@ -25,18 +25,18 @@ import {
 import {FoodFishFilled} from "@fluentui/react-icons";
 
 const downloadData = async (url: string) => {
-  window.open(`http:///www.az.lab.uec.ac.jp:8080/~ywatanabe/PhishCollector/api/collected/download?url=${ url }`, "_blank");
+  window.open(`http:///www.az.lab.uec.ac.jp:30080/~ywatanabe/PhishCollector/api/collected/download?url=${ url }`, "_blank");
 }
 
 const downloadDataAll = async () => {
-  window.open("http:///www.az.lab.uec.ac.jp:8080/~ywatanabe/PhishCollector/api/collected/downloadAll", "_blank");
+  window.open("http:///www.az.lab.uec.ac.jp:30080/~ywatanabe/PhishCollector/api/collected/downloadAll", "_blank");
 }
 
 function Collected() {
   const state = useCollectedState();
 
   const loadData = async () => {
-    const server = "http:///www.az.lab.uec.ac.jp:8080/~ywatanabe/PhishCollector/api/collected/list";
+    const server = "http:///www.az.lab.uec.ac.jp:30080/~ywatanabe/PhishCollector/api/collected/list";
     const phishInfo: PhishInfo[] = await fetch(server, { mode: "cors" }).then(res => res.json());
     state.update({ phishInfo: phishInfo.toSorted((a, b) => -a.date.localeCompare(b.date)) });
   }
