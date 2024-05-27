@@ -1,0 +1,22 @@
+.centering {
+    min-height: 100svh;
+    height: auto;
+    width: 100%;
+    display: grid;
+    justify-content: center;
+    align-items: center;
+}
+
+.centeringHorizontal {
+    min-height: 100svh;
+    height: auto;
+    width: 100%;
+    display: grid;
+    justify-content: center;
+    overflow: auto;
+}
+
+.maxSize {
+    height: 100svh;
+    width: 100%;
+}

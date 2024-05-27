@@ -12,8 +12,6 @@ import {
   DialogTrigger,
   Input,
   InputProps,
-  LargeTitle,
-  Subtitle2,
   Text,
   Toolbar,
   ToolbarButton,
@@ -34,7 +32,6 @@ import {
   MdDoneAll,
   MdHelp,
   MdOpenInNew,
-  MdSailing,
   MdSecurity,
   MdTravelExplore,
   MdVerified
@@ -42,6 +39,7 @@ import {
 import {DialogOpenChangeEventHandler} from "@fluentui/react-dialog";
 import {checkGSB} from "../utils/gsb.ts";
 import {sleep} from "../utils/sleep.ts";
+import {TitleHeader} from "../components/TitleHeader.tsx";
 
 function Home() {
   const state = useHomeState();
@@ -90,13 +88,7 @@ function Home() {
     <div className="centeringHorizontal" ref={ scrollBottomRef }>
       <StackShim horizontalAlign="center" tokens={ { childrenGap: 48, padding: "48px 12px 48px 12px" } }>
         { /*タイトル*/ }
-        <StackShim horizontal verticalAlign={ "center" } tokens={ { childrenGap: 12 } }>
-          <MdSailing style={ { width: 52, height: 52, color: "#38B48B" } }/>
-          <div>
-            <LargeTitle>Phish Collector </LargeTitle>
-            <Subtitle2>v1.2.1</Subtitle2>
-          </div>
-        </StackShim>
+        <TitleHeader />
 
         <ControlButtons
           onCopy={ async () => await navigator.clipboard.writeText(state.urlInfo.map(info => info.url).join(" ")) }

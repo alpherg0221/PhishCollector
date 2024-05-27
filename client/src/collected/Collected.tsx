@@ -7,22 +7,20 @@ import {
   MdDownload,
   MdLink,
   MdRefresh,
-  MdSailing,
   MdVerified
 } from "react-icons/md";
 import {
   Body2,
   Button,
   Divider,
-  LargeTitle,
   Subtitle1,
-  Subtitle2,
   Toolbar,
   ToolbarButton,
   ToolbarDivider,
   Tooltip,
 } from "@fluentui/react-components";
 import {FoodFishFilled} from "@fluentui/react-icons";
+import {TitleHeader} from "../components/TitleHeader.tsx";
 
 const downloadData = async (url: string) => {
   window.open(`http:///www.az.lab.uec.ac.jp:30080/~ywatanabe/PhishCollector/api/collected/download?url=${ url }`, "_blank");
@@ -45,13 +43,7 @@ function Collected() {
     <div className="centeringHorizontal">
       <StackShim horizontalAlign="center" tokens={ { childrenGap: 48, padding: "48px 0px 48px 0px" } }>
         { /*タイトル*/ }
-        <StackShim horizontal verticalAlign={ "center" } tokens={ { childrenGap: 12 } }>
-          <MdSailing style={ { width: 52, height: 52, color: "#38B48B" } }/>
-          <div>
-            <LargeTitle>Phish Collector </LargeTitle>
-            <Subtitle2>v1.2.0</Subtitle2>
-          </div>
-        </StackShim>
+        <TitleHeader />
 
         <StackShim>
           <Toolbar>
