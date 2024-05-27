@@ -88,7 +88,7 @@ function Home() {
 
   return (
     <div className="centeringHorizontal" ref={ scrollBottomRef }>
-      <StackShim horizontalAlign="center" tokens={ { childrenGap: 48, padding: "48px 0px 48px 0px" } }>
+      <StackShim horizontalAlign="center" tokens={ { childrenGap: 48, padding: "48px 12px 48px 12px" } }>
         { /*タイトル*/ }
         <StackShim horizontal verticalAlign={ "center" } tokens={ { childrenGap: 12 } }>
           <MdSailing style={ { width: 52, height: 52, color: "#38B48B" } }/>
