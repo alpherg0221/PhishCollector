@@ -6,6 +6,17 @@ export enum Warning {
 
 export const warningOrder = Object.values(Warning);
 
+export const warningNextTo = (warning: Warning) => {
+  switch (warning) {
+    case Warning.Safe:
+      return Warning.Unknown;
+    case Warning.Unknown:
+      return Warning.Phishing;
+    case Warning.Phishing:
+      return Warning.Safe;
+  }
+}
+
 export enum SortBy {
   Url, Target, GSB, Browser,
 }

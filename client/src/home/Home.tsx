@@ -1,5 +1,5 @@
 import './Home.css'
-import {defaultHomeState, SortBy, UrlInfo, useHomeState, Warning, warningOrder} from "./HomeState.tsx";
+import {defaultHomeState, SortBy, UrlInfo, useHomeState, Warning, warningNextTo, warningOrder} from "./HomeState.tsx";
 import {StackShim} from "@fluentui/react-migration-v8-v9";
 import {
   Body1Strong,
@@ -40,6 +40,7 @@ import {DialogOpenChangeEventHandler} from "@fluentui/react-dialog";
 import {checkGSB} from "../utils/gsb.ts";
 import {sleep} from "../utils/sleep.ts";
 import {TitleHeader} from "../components/TitleHeader.tsx";
+import {updateArray} from "../utils/extension.ts";
 
 function Home() {
   const state = useHomeState();
@@ -88,7 +89,7 @@ function Home() {
     <div className="centeringHorizontal" ref={ scrollBottomRef }>
       <StackShim horizontalAlign="center" tokens={ { childrenGap: 48, padding: "48px 12px 48px 12px" } }>
         { /*タイトル*/ }
-        <TitleHeader />
+        <TitleHeader/>
 
         <ControlButtons
           onCopy={ async () => await navigator.clipboard.writeText(state.urlInfo.map(info => info.url).join(" ")) }
@@ -124,6 +125,13 @@ function Home() {
               onTargetChange={ (_, data) => onTargetChange(index, data) }
               onFillClick={ () => state.update({
                 urlInfo: state.urlInfo.map((info) => ({ ...info, target: state.urlInfo[index].target }) as UrlInfo)
+              }) }
+              onBrowserChangeClick={ () => state.update({
+                urlInfo: updateArray(
+                  state.urlInfo,
+                  index,
+                  { ...info, warning: { ...info.warning, browser: warningNextTo(info.warning.browser) } }
+                )
               }) }
               onDeleteClick={ () => state.update({ urlInfo: state.urlInfo.filter((_, idx) => idx !== index) }) }
             />
@@ -209,6 +217,7 @@ const URLInputField = (props: {
   onUrlPaste: InputProps["onPaste"],
   onTargetChange: InputProps["onChange"],
   onFillClick: MouseEventHandler,
+  onBrowserChangeClick: MouseEventHandler,
   onDeleteClick?: MouseEventHandler,
 }) => {
   return (
@@ -258,7 +267,7 @@ const URLInputField = (props: {
 
         <ToolbarDivider/>
 
-        <WarningStatus status={ props.urlInfo.warning.browser }/>
+        <WarningStatus status={ props.urlInfo.warning.browser } onChange={ props.onBrowserChangeClick }/>
 
         <ToolbarDivider/>
 
@@ -310,7 +319,7 @@ const GSBDialogButton = (props: {
   )
 }
 
-const WarningStatus = (props: { status: Warning }) => {
+const WarningStatus = (props: { status: Warning, onChange?: MouseEventHandler }) => {
   const items = {
     [Warning.Safe]: { icon: <MdVerified/>, style: { color: "#00B379" } },
     [Warning.Unknown]: { icon: <MdHelp/>, style: {} },
@@ -323,6 +332,7 @@ const WarningStatus = (props: { status: Warning }) => {
       icon={ items[props.status].icon }
       size={ "large" }
       style={ items[props.status].style }
+      onClick={ props.onChange }
     />
   );
 }
