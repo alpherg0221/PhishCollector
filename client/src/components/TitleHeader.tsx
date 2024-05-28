@@ -8,7 +8,7 @@ export const TitleHeader = () => {
       <MdSailing style={ { width: 52, height: 52, color: "#38B48B" } }/>
       <div>
         <LargeTitle>Phish Collector </LargeTitle>
-        <Subtitle2>v1.2.1</Subtitle2>
+        <Subtitle2>v1.3.0</Subtitle2>
       </div>
     </StackShim>
   )
