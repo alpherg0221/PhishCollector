@@ -6,19 +6,21 @@ import {
   Tooltip
 } from "@fluentui/react-components";
 import {JSX} from "react";
-import {MdHome, MdPhishing, MdSettings} from "react-icons/md";
+import {MdAnalytics, MdHome, MdPhishing, MdSettings} from "react-icons/md";
 import {StackShim} from "@fluentui/react-migration-v8-v9";
 
-export enum Route {
+enum Route {
   Home = "home",
   Collected = "collected",
+  Analyze = "analyze",
   Settings = "settings",
 }
 
-export const AppDrawer = (props: { children?: JSX.Element, current: Route, }) => {
+const AppDrawer = (props: { children?: JSX.Element, current: Route, }) => {
   const items: { route: Route, name: string, icon: JSX.Element }[] = [
     { route: Route.Home, name: "Home", icon: <MdHome/> },
     { route: Route.Collected, name: "Collected", icon: <MdPhishing/> },
+    { route: Route.Analyze, name: "Analyze", icon: <MdAnalytics/> },
     { route: Route.Settings, name: "Settings", icon: <MdSettings/> },
   ];
 
@@ -47,4 +49,9 @@ export const AppDrawer = (props: { children?: JSX.Element, current: Route, }) =>
       { props.children }
     </div>
   );
+}
+
+export {
+  Route,
+  AppDrawer
 }
