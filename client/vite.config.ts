@@ -16,6 +16,7 @@ export default defineConfig({
       input: {
         home: resolve(root, "home", "index.html"),
         collected: resolve(root, "collected", "index.html"),
+        analyze: resolve(root, "analyze", "index.html"),
         settings: resolve(root, "settings", "index.html"),
       }
     }
