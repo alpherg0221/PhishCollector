@@ -41,6 +41,7 @@ import {checkGSB} from "../utils/gsb.ts";
 import {sleep} from "../utils/sleep.ts";
 import {TitleHeader} from "../components/TitleHeader.tsx";
 import {updateArray} from "../utils/extension.ts";
+import {enqueueSnackbar} from "notistack";
 
 function Home() {
   const state = useHomeState();
@@ -92,7 +93,13 @@ function Home() {
         <TitleHeader/>
 
         <ControlButtons
-          onCopy={ async () => await navigator.clipboard.writeText(state.urlInfo.map(info => info.url).join(" ")) }
+          onCopy={ async () => {
+            await navigator.clipboard.writeText(state.urlInfo.map(info => info.url).join(" "));
+            enqueueSnackbar("Copied All URLs!", {
+              variant: "success",
+              anchorOrigin: { vertical: "bottom", horizontal: "center" },
+            });
+          } }
           onDelete={ () => state.reset() }
           onOpenAll={ () => state.urlInfo.forEach(info => window.open(info.url, "_blank")) }
         />
@@ -236,7 +243,14 @@ const URLInputField = (props: {
           <Button
             appearance={ "outline" }
             icon={ <MdContentCopy size={ "18" }/> }
-            size={ "small" } onClick={ () => navigator.clipboard.writeText(props.urlInfo.url) }
+            size={ "small" }
+            onClick={ async () => {
+              await navigator.clipboard.writeText(props.urlInfo.url);
+              enqueueSnackbar("Copied URL!", {
+                variant: "success",
+                anchorOrigin: { vertical: "bottom", horizontal: "center" },
+              });
+            } }
           />
         }
         placeholder={ "Phishing URL" }

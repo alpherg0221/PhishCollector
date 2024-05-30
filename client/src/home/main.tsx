@@ -4,6 +4,7 @@ import Home from './Home.tsx'
 import './index.css'
 import {BrandVariants, createDarkTheme, FluentProvider, Theme} from "@fluentui/react-components";
 import {AppDrawer, Route} from "../components/Drawer.tsx";
+import {SnackbarProvider} from "notistack";
 
 const newTheme: BrandVariants = {
   10: "#000404", 20: "#061D1D", 30: "#003030", 40: "#003D3C",
@@ -20,9 +21,11 @@ darkTheme.colorBrandForeground2 = newTheme[120];
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <FluentProvider theme={ darkTheme }>
-      <AppDrawer current={ Route.Home } >
-        <Home/>
-      </AppDrawer>
+      <SnackbarProvider autoHideDuration={ 2000 }>
+        <AppDrawer current={ Route.Home }>
+          <Home/>
+        </AppDrawer>
+      </SnackbarProvider>
     </FluentProvider>
   </React.StrictMode>,
 )
