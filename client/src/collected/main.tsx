@@ -4,6 +4,7 @@ import './index.css'
 import {BrandVariants, createDarkTheme, FluentProvider, Theme} from "@fluentui/react-components";
 import {AppDrawer, Route} from "../components/Drawer.tsx";
 import Collected from "./Collected.tsx";
+import {SnackbarProvider} from "notistack";
 
 const newTheme: BrandVariants = {
   10: "#000404", 20: "#061D1D", 30: "#003030", 40: "#003D3C",
@@ -20,6 +21,7 @@ darkTheme.colorBrandForeground2 = newTheme[120];
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <FluentProvider theme={ darkTheme }>
+      <SnackbarProvider />
       <AppDrawer current={ Route.Collected }>
         <Collected/>
       </AppDrawer>
