@@ -6,14 +6,14 @@ import {
   MdCrisisAlert,
   MdDownload,
   MdLink,
-  MdRefresh,
+  MdRefresh, MdSecurity,
   MdVerified
 } from "react-icons/md";
 import {
+  Body1Strong,
   Body2,
   Button,
   Divider,
-  Subtitle1,
   Toolbar,
   ToolbarButton,
   ToolbarDivider,
@@ -43,7 +43,7 @@ function Collected() {
     <div className="centeringHorizontal">
       <StackShim horizontalAlign="center" tokens={ { childrenGap: 48, padding: "48px 0px 48px 0px" } }>
         { /*タイトル*/ }
-        <TitleHeader />
+        <TitleHeader/>
 
         <StackShim>
           <Toolbar>
@@ -82,40 +82,54 @@ function Collected() {
 const PhishInfoHeader = () => {
   return (
     <StackShim horizontal verticalAlign={ "center" } tokens={ { childrenGap: 24, padding: "0px 48px 0px 48px" } }>
-      <Subtitle1 style={ { width: 206 } }> DATE </Subtitle1>
-      <Subtitle1 style={ { width: "calc(26px + 35svw)" } }> URL </Subtitle1>
-      <Subtitle1 style={ { width: 166 } }> TARGET </Subtitle1>
-      <Subtitle1 style={ { width: 44 } }> GSB </Subtitle1>
-    </StackShim>
-  );
-}
-
-const PhishInfoRow = (props: { info: PhishInfo }) => {
-  return (
-    <StackShim horizontal verticalAlign={ "center" } tokens={ { childrenGap: 24, padding: "0px 48px 0px 48px" } }>
       <StackShim horizontal verticalAlign={ "center" }>
         <MdCalendarMonth size={ 18 } style={ { marginRight: 8 } }/>
-        <Body2 style={ { width: 180 } }>{ props.info.date }</Body2>
+        <Body1Strong style={ { width: 180 } }> DATE </Body1Strong>
       </StackShim>
 
       <StackShim horizontal verticalAlign={ "center" }>
         <MdLink size={ 18 } style={ { marginRight: 8 } }/>
-        <Tooltip content={ props.info.url } relationship={ "label" } withArrow>
-          <Body2 style={ { width: "35svw" } } truncate wrap={ false }>{ props.info.url }</Body2>
-        </Tooltip>
+        <Body1Strong style={ { width: "35svw" } }> URL </Body1Strong>
       </StackShim>
 
       <StackShim horizontal verticalAlign={ "center" }>
         <MdCrisisAlert size={ 18 } style={ { marginRight: 8 } }/>
-        <Body2 style={ { width: 140 } }>{ props.info.target }</Body2>
+        <Body1Strong style={ { width: 140 } }> TARGET </Body1Strong>
       </StackShim>
 
-      <StackShim horizontal verticalAlign={ "center" } tokens={ { padding: "0px 12px 0px 12px" } }>
+      <StackShim horizontal verticalAlign={ "center" }>
+        <MdSecurity size={ 18 } style={ { marginRight: 8 } }/>
+        <Body1Strong style={ { width: 32 } }> GSB </Body1Strong>
+      </StackShim>
+
+      <Body1Strong style={ { width: 36 } }> </Body1Strong>
+    </StackShim>
+  );
+}
+
+{/*各行の要素*/}
+const PhishInfoRow = (props: { info: PhishInfo }) => {
+  return (
+    <StackShim horizontal verticalAlign={ "center" } tokens={ { childrenGap: 24, padding: "0px 48px 0px 48px" } }>
+      {/*日付*/}
+      <Body2 style={ { width: 180 + 18 + 8 } }>{ props.info.date }</Body2>
+
+      {/*URL*/}
+      <Tooltip content={ props.info.url } relationship={ "label" } withArrow>
+        <Body2 style={ { width: "calc(18px + 8px + 35svw)" } } truncate wrap={ false }>{ props.info.url }</Body2>
+      </Tooltip>
+
+      {/*ターゲット*/}
+      <Body2 style={ { width: 140 + 18 + 8 } }>{ props.info.target }</Body2>
+
+      {/*GSB*/}
+      <StackShim horizontal verticalAlign={ "center" } tokens={ { padding: "0px 19px 0px 19px" } }>
         { props.info.gsb
           ? <FoodFishFilled fontSize={ 20 } color={ "#FF0000" }/>
           : <MdVerified size={ 20 } color={ "#00B379" }/> }
       </StackShim>
 
+      {/*ダウンロードボタン*/}
       <StackShim horizontal verticalAlign={ "center" } tokens={ { padding: "0px 0px 0px 12px" } }>
         <Button
           icon={ <MdDownload size={ 20 }/> }
