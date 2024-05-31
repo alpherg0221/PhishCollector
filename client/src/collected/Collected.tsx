@@ -137,7 +137,9 @@ const PhishInfoRow = (props: { info: PhishInfo }) => {
         <Body2 style={ { width: "calc(18px + 8px + 35svw)" } } truncate wrap={ false }>{ props.info.url }</Body2>
       </Tooltip>
 
-      <Body2 style={ { width: 140 + 18 + 8 } }>{ props.info.target }</Body2>
+      <Tooltip content={ props.info.target } relationship={ "label" } withArrow>
+        <Body2 style={ { width: 140 + 18 + 8 } } truncate wrap={ false }>{ props.info.target }</Body2>
+      </Tooltip>
 
       <StackShim horizontal verticalAlign={ "center" } tokens={ { padding: "0px 19px 0px 19px" } }>
         { props.info.gsb
