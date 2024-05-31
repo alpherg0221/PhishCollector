@@ -57,32 +57,34 @@ function Collected() {
 
   return (
     <div className="centeringHorizontal">
-      <StackShim horizontalAlign="center" tokens={ { childrenGap: 48, padding: "48px 0px 48px 0px" } }>
+      <StackShim horizontalAlign="center" tokens={ { padding: "48px 0px 48px 0px" } }>
         { /*タイトル*/ }
         <TitleHeader/>
 
-        <StackShim>
-          <Toolbar>
-            <ToolbarButton
-              children={ "Download Data" }
-              icon={ <MdDownload/> }
-              onClick={ async () => await downloadDataAll() }
-            />
+        <StackShim className="header" tokens={ { padding: "48px 0px 12px 0px" } }>
+          <StackShim horizontal horizontalAlign="center" tokens={ { padding: "0px 0px 48px 0px" } }>
+            <Toolbar>
+              <ToolbarButton
+                children={ "Download Data" }
+                icon={ <MdDownload/> }
+                onClick={ async () => await downloadDataAll() }
+              />
 
-            <ToolbarDivider/>
+              <ToolbarDivider/>
 
-            <ToolbarButton
-              children={ "Refresh" }
-              icon={ <MdRefresh/> }
-              onClick={ async () => await loadData() }
-            />
-          </Toolbar>
+              <ToolbarButton
+                children={ "Refresh" }
+                icon={ <MdRefresh/> }
+                onClick={ async () => await loadData() }
+              />
+            </Toolbar>
+          </StackShim>
+
+          <PhishInfoHeader/>
+          <Divider appearance={ "brand" } style={ { paddingTop: 12 } }/>
         </StackShim>
 
         <StackShim tokens={ { childrenGap: 12 } }>
-          <PhishInfoHeader/>
-          <Divider appearance={ "brand" }/>
-
           { state.phishInfo.length > 0
             ? state.phishInfo.map(info => (
               <StackShim tokens={ { childrenGap: 12 } }>
