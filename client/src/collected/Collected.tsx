@@ -14,6 +14,7 @@ import {
   Body2,
   Button,
   Divider,
+  Spinner,
   Toolbar,
   ToolbarButton,
   ToolbarDivider,
@@ -21,6 +22,8 @@ import {
 } from "@fluentui/react-components";
 import {FoodFishFilled} from "@fluentui/react-icons";
 import {TitleHeader} from "../components/TitleHeader.tsx";
+import {useEffect} from "react";
+import {enqueueSnackbar} from "notistack";
 
 const downloadData = async (url: string) => {
   window.open(`http:///www.az.lab.uec.ac.jp:30080/~ywatanabe/PhishCollector/api/collected/download?url=${ url }`, "_blank");
@@ -35,9 +38,22 @@ function Collected() {
 
   const loadData = async () => {
     const server = "http:///www.az.lab.uec.ac.jp:30080/~ywatanabe/PhishCollector/api/collected/list";
-    const phishInfo: PhishInfo[] = await fetch(server, { mode: "cors" }).then(res => res.json());
-    state.update({ phishInfo: phishInfo.toSorted((a, b) => -a.date.localeCompare(b.date)) });
+    state.update({ phishInfo: [] });
+    try {
+      const response = await fetch(server, { mode: "cors" });
+      const phishInfo: PhishInfo[] = await response.json();
+      state.update({ phishInfo: phishInfo.toSorted((a, b) => -a.date.localeCompare(b.date)) });
+    } catch {
+      enqueueSnackbar("Failed to load data", {
+        variant: "error",
+        anchorOrigin: { vertical: "bottom", horizontal: "center" },
+      });
+    }
   }
+
+  useEffect(() => {
+    loadData().then();
+  }, []);
 
   return (
     <div className="centeringHorizontal">
@@ -56,7 +72,7 @@ function Collected() {
             <ToolbarDivider/>
 
             <ToolbarButton
-              children={ "Load Data" }
+              children={ "Refresh" }
               icon={ <MdRefresh/> }
               onClick={ async () => await loadData() }
             />
@@ -67,12 +83,15 @@ function Collected() {
           <PhishInfoHeader/>
           <Divider appearance={ "brand" }/>
 
-          { state.phishInfo.map(info => (
-            <StackShim tokens={ { childrenGap: 12 } }>
-              <PhishInfoRow info={ info }/>
-              <Divider appearance={ "strong" }/>
-            </StackShim>
-          )) }
+          { state.phishInfo.length > 0
+            ? state.phishInfo.map(info => (
+              <StackShim tokens={ { childrenGap: 12 } }>
+                <PhishInfoRow info={ info }/>
+                <Divider appearance={ "strong" }/>
+              </StackShim>
+            ))
+            : <Spinner size={ "huge" } style={ { paddingTop: 96 } }/>
+          }
         </StackShim>
       </StackShim>
     </div>
@@ -107,29 +126,23 @@ const PhishInfoHeader = () => {
   );
 }
 
-{/*各行の要素*/}
 const PhishInfoRow = (props: { info: PhishInfo }) => {
   return (
     <StackShim horizontal verticalAlign={ "center" } tokens={ { childrenGap: 24, padding: "0px 48px 0px 48px" } }>
-      {/*日付*/}
       <Body2 style={ { width: 180 + 18 + 8 } }>{ props.info.date }</Body2>
 
-      {/*URL*/}
       <Tooltip content={ props.info.url } relationship={ "label" } withArrow>
         <Body2 style={ { width: "calc(18px + 8px + 35svw)" } } truncate wrap={ false }>{ props.info.url }</Body2>
       </Tooltip>
 
-      {/*ターゲット*/}
       <Body2 style={ { width: 140 + 18 + 8 } }>{ props.info.target }</Body2>
 
-      {/*GSB*/}
       <StackShim horizontal verticalAlign={ "center" } tokens={ { padding: "0px 19px 0px 19px" } }>
         { props.info.gsb
           ? <FoodFishFilled fontSize={ 20 } color={ "#FF0000" }/>
           : <MdVerified size={ 20 } color={ "#00B379" }/> }
       </StackShim>
 
-      {/*ダウンロードボタン*/}
       <StackShim horizontal verticalAlign={ "center" } tokens={ { padding: "0px 0px 0px 12px" } }>
         <Button
           icon={ <MdDownload size={ 20 }/> }

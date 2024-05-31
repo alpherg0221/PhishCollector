@@ -1,4 +1,3 @@
-import React from 'react'
 import ReactDOM from 'react-dom/client'
 import './index.css'
 import {BrandVariants, createDarkTheme, FluentProvider, Theme} from "@fluentui/react-components";
@@ -19,12 +18,10 @@ darkTheme.colorBrandForeground1 = newTheme[110];
 darkTheme.colorBrandForeground2 = newTheme[120];
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <FluentProvider theme={ darkTheme }>
-      <SnackbarProvider />
-      <AppDrawer current={ Route.Collected }>
-        <Collected/>
-      </AppDrawer>
-    </FluentProvider>
-  </React.StrictMode>,
+  <FluentProvider theme={ darkTheme }>
+    <SnackbarProvider autoHideDuration={ 2000 }/>
+    <AppDrawer current={ Route.Collected }>
+      <Collected/>
+    </AppDrawer>
+  </FluentProvider>
 )
