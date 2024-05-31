@@ -88,25 +88,29 @@ function Home() {
 
   return (
     <div className="centeringHorizontal" ref={ scrollBottomRef }>
-      <StackShim horizontalAlign="center" tokens={ { childrenGap: 48, padding: "48px 12px 48px 12px" } }>
+      <StackShim horizontalAlign="center" tokens={ { padding: "48px 12px 48px 12px" } }>
         { /*タイトル*/ }
         <TitleHeader/>
 
-        <ControlButtons
-          onCopy={ async () => {
-            await navigator.clipboard.writeText(state.urlInfo.map(info => info.url).join(" "));
-            enqueueSnackbar("Copied All URLs!", {
-              variant: "success",
-              anchorOrigin: { vertical: "bottom", horizontal: "center" },
-            });
-          } }
-          onDelete={ () => state.reset() }
-          onOpenAll={ () => state.urlInfo.forEach(info => window.open(info.url, "_blank")) }
-        />
+        {/*固定するヘッダ*/ }
+        <StackShim className="header" tokens={ { padding: "48px 0px 12px 0px" } }>
+          { /*コントロールボタン*/ }
+          <StackShim horizontalAlign={ "center" }>
+            <ControlButtons
+              onCopy={ async () => {
+                await navigator.clipboard.writeText(state.urlInfo.map(info => info.url).join(" "));
+                enqueueSnackbar("Copied All URLs!", {
+                  variant: "success",
+                  anchorOrigin: { vertical: "bottom", horizontal: "center" },
+                });
+              } }
+              onDelete={ () => state.reset() }
+              onOpenAll={ () => state.urlInfo.forEach(info => window.open(info.url, "_blank")) }
+            />
+          </StackShim>
 
-        <StackShim tokens={ { childrenGap: 12 } }>
           { /*URL入力フィールドのヘッダー*/ }
-          <StackShim horizontal verticalAlign={ "center" } tokens={ { childrenGap: 8 } }>
+          <StackShim horizontal verticalAlign={ "center" } tokens={ { childrenGap: 8, padding: "48px 0px 0px 0px" } }>
             <SortableTitle width={ "35svw" } sortBy={ SortBy.Url }> Phishing URL </SortableTitle>
             <SortableTitle width={ "20svw" } sortBy={ SortBy.Target }> Target Service </SortableTitle>
             <Toolbar>
@@ -117,8 +121,10 @@ function Home() {
               <Body1Strong style={ { width: "120px", textAlign: "center" } }> Actions </Body1Strong>
             </Toolbar>
           </StackShim>
+        </StackShim>
 
-          { /*URL入力フィールド*/ }
+        { /*URL入力フィールド*/ }
+        <StackShim tokens={ { childrenGap: 12 } }>
           { state.urlInfo.map((info, index) =>
             <URLInputField
               key={ `urlInputField${ index }` }
@@ -156,6 +162,7 @@ function Home() {
             scrollBottomRef?.current?.scrollIntoView({ behavior: "smooth", block: "end" });
           } }
           size={ "large" }
+          style={ { marginTop: "48px" } }
         />
       </StackShim>
     </div>
