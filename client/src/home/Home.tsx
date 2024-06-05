@@ -1,5 +1,14 @@
 import './Home.css'
-import {defaultHomeState, SortBy, UrlInfo, useHomeState, Warning, warningNextTo, warningOrder} from "./HomeState.tsx";
+import {
+  CollectStatus,
+  defaultHomeState,
+  SortBy,
+  UrlInfo,
+  useHomeState,
+  Warning,
+  warningNextTo,
+  warningOrder
+} from "./HomeState.tsx";
 import {StackShim} from "@fluentui/react-migration-v8-v9";
 import {
   Body1Strong,
@@ -53,6 +62,12 @@ function Home() {
 
   const scrollBottomRef = useRef<HTMLDivElement>(null);
 
+  const getServerStatus = async () => {
+    return await fetch(`${ defaultServer }/status`, { signal: AbortSignal.timeout(5000) })
+      .then(res => ServerStatus.fromCode(res.status))
+      .catch(e => e.message === "signal timed out" ? ServerStatus.STOPPING : ServerStatus.ERROR);
+  }
+
   const onURLChange = (idx: number, data: InputOnChangeData) => {
     // 新しい状態の作成
     const newUrlInfo = state.urlInfo
@@ -69,7 +84,8 @@ function Home() {
     const urlInfo = data.split(RegExp(" |\r|\n|\r\n")).map(url => ({
       url: url,
       target: "",
-      warning: { gsb: Warning.Unknown, browser: Warning.Unknown }
+      warning: { gsb: Warning.Unknown, browser: Warning.Unknown },
+      status: CollectStatus.NotCollected,
     } as UrlInfo));
 
     // 新しい状態の作成
@@ -89,6 +105,25 @@ function Home() {
         target: index === idx ? data.value : info.target,
       }) as UrlInfo),
     })
+  }
+
+  const collectPhish = async (index: number, url: string, target: string, gsb: Warning) => {
+    if (gsb === Warning.Unknown) return;
+
+    state.update({
+      urlInfo: updateArray(state.urlInfo, index, { ...state.urlInfo[index], status: CollectStatus.Collecting }),
+    });
+
+    await fetch(`${ defaultServer }/crawler/collect?url=${ url }&target=${ target }&gsb=${ gsb === Warning.Phishing }`).then(async res => await res.text() === "OK"
+      ? state.update({
+        urlInfo: updateArray(state.urlInfo, index, { ...state.urlInfo[index], status: CollectStatus.Collected }),
+      })
+      : state.update({
+        urlInfo: updateArray(state.urlInfo, index, { ...state.urlInfo[index], status: CollectStatus.Error }),
+      })
+    ).catch(() => state.update({
+      urlInfo: updateArray(state.urlInfo, index, { ...state.urlInfo[index], status: CollectStatus.Error }),
+    }));
   }
 
   return (
@@ -111,6 +146,7 @@ function Home() {
               } }
               onDelete={ () => state.reset() }
               onOpenAll={ () => state.urlInfo.forEach(info => window.open(info.url, "_blank")) }
+              getServerStatus={ getServerStatus }
             />
           </StackShim>
 
@@ -122,6 +158,8 @@ function Home() {
               <SortableTitle width={ "40px" } sortBy={ SortBy.GSB }> GSB </SortableTitle>
               <ToolbarDivider/>
               <SortableTitle width={ "40px" } sortBy={ SortBy.Browser }> 警告 </SortableTitle>
+              <ToolbarDivider/>
+              <Body1Strong style={ { width: "40px", textAlign: "center" } }> 収集 </Body1Strong>
               <ToolbarDivider/>
               <Body1Strong style={ { width: "120px", textAlign: "center" } }> Actions </Body1Strong>
             </Toolbar>
@@ -151,6 +189,7 @@ function Home() {
                   { ...info, warning: { ...info.warning, browser: warningNextTo(info.warning.browser) } }
                 )
               }) }
+              onCollectClick={ async () => await collectPhish(index, info.url, info.target, info.warning.browser) }
               onDeleteClick={ () => state.update({ urlInfo: state.urlInfo.filter((_, idx) => idx !== index) }) }
             />
           ) }
@@ -178,14 +217,9 @@ const ControlButtons = (props: {
   onCopy: MouseEventHandler,
   onDelete: MouseEventHandler,
   onOpenAll: MouseEventHandler,
+  getServerStatus: () => Promise<ServerStatus>,
 }) => {
   const state = useHomeState();
-
-  const getServerStatus = async () => {
-    return await fetch(`${ defaultServer }/status`, { signal: AbortSignal.timeout(5000) })
-      .then(res => ServerStatus.fromCode(res.status))
-      .catch(e => e.message === "signal timed out" ? ServerStatus.STOPPING : ServerStatus.ERROR);
-  }
 
   return (
     <Toolbar>
@@ -193,7 +227,7 @@ const ControlButtons = (props: {
         isOpen={ state.serverDialogOpen }
         onOpenChange={ async (_, data) => {
           state.update({ serverDialogOpen: data.open });
-          state.update({ serverStatus: data.open ? await getServerStatus() : ServerStatus.LOADING });
+          state.update({ serverStatus: data.open ? await props.getServerStatus() : ServerStatus.LOADING });
         } }
         status={ state.serverStatus }
       />
@@ -254,6 +288,7 @@ const URLInputField = (props: {
   onTargetChange: InputProps["onChange"],
   onFillClick: MouseEventHandler,
   onBrowserChangeClick: MouseEventHandler,
+  onCollectClick: MouseEventHandler,
   onDeleteClick?: MouseEventHandler,
 }) => {
   return (
@@ -311,6 +346,20 @@ const URLInputField = (props: {
         <ToolbarDivider/>
 
         <WarningStatus status={ props.urlInfo.warning.browser } onChange={ props.onBrowserChangeClick }/>
+
+        <ToolbarDivider/>
+
+        <Tooltip content={ props.urlInfo.status.tooltip } relationship={ "label" } withArrow>
+          <Button
+            appearance={ props.urlInfo.status === CollectStatus.NotCollected ? "primary" : "outline" }
+            icon={ props.urlInfo.status === CollectStatus.Collecting
+              ? <Spinner size="tiny" style={ { width: 20 } }/>
+              : props.urlInfo.status.icon
+            }
+            size={ "large" }
+            onClick={ props.urlInfo.status === CollectStatus.NotCollected ? props.onCollectClick : undefined }
+          />
+        </Tooltip>
 
         <ToolbarDivider/>
 
