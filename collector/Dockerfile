@@ -3,6 +3,9 @@ FROM python:3.12.1-slim-bullseye
 RUN apt update
 RUN apt install -y p7zip-full curl
 
+RUN curl -O https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+RUN apt install ./google-chrome-stable_current_amd64.deb -y
+
 RUN adduser collector
 USER collector
 WORKDIR /home/collector

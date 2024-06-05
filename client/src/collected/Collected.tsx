@@ -24,20 +24,21 @@ import {FoodFishFilled} from "@fluentui/react-icons";
 import {TitleHeader} from "../components/TitleHeader.tsx";
 import {useEffect} from "react";
 import {enqueueSnackbar} from "notistack";
+import {defaultServer} from "../utils/server.tsx";
 
 const downloadData = async (url: string) => {
-  window.open(`http:///www.az.lab.uec.ac.jp:30080/~ywatanabe/PhishCollector/api/collected/download?url=${ url }`, "_blank");
+  window.open(`${ defaultServer }/collected/download?url=${ url }`, "_blank");
 }
 
 const downloadDataAll = async () => {
-  window.open("http:///www.az.lab.uec.ac.jp:30080/~ywatanabe/PhishCollector/api/collected/downloadAll", "_blank");
+  window.open(`${ defaultServer }/collected/downloadAll`, "_blank");
 }
 
 function Collected() {
   const state = useCollectedState();
 
   const loadData = async () => {
-    const server = "http:///www.az.lab.uec.ac.jp:30080/~ywatanabe/PhishCollector/api/collected/list";
+    const server = `${ defaultServer }/collected/list`;
     state.update({ phishInfo: [] });
     try {
       const response = await fetch(server, { mode: "cors" });
