@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Request
-from fastapi.responses import Response
+from fastapi.responses import PlainTextResponse, Response
 from fastapi.middleware.cors import CORSMiddleware
 
 from src.routes.crawler import router_crawler
@@ -17,6 +17,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.get("/status", tags=["status"])
+async def status():
+    return PlainTextResponse("RUNNING", status_code=200)
 
 
 @app.exception_handler(Exception)

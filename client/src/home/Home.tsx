@@ -7,18 +7,22 @@ import {
   Dialog,
   DialogActions,
   DialogBody,
+  DialogContent,
   DialogSurface,
   DialogTitle,
   DialogTrigger,
   Input,
   InputProps,
+  Spinner,
+  Subtitle2,
+  Tag,
   Text,
   Toolbar,
   ToolbarButton,
   ToolbarDivider,
   Tooltip
 } from "@fluentui/react-components";
-import {FoodFish20Filled, FoodFishFilled} from "@fluentui/react-icons";
+import {FoodFish20Filled, FoodFishFilled, ServerMultipleFilled} from "@fluentui/react-icons";
 import {InputOnChangeData} from "@fluentui/react-input";
 import {formatURL} from "../utils/url.ts";
 import {MouseEventHandler, useRef} from "react";
@@ -42,6 +46,7 @@ import {sleep} from "../utils/sleep.ts";
 import {TitleHeader} from "../components/TitleHeader.tsx";
 import {updateArray} from "../utils/extension.ts";
 import {enqueueSnackbar} from "notistack";
+import {defaultServer, ServerStatus} from "../utils/server.tsx";
 
 function Home() {
   const state = useHomeState();
@@ -176,8 +181,25 @@ const ControlButtons = (props: {
 }) => {
   const state = useHomeState();
 
+  const getServerStatus = async () => {
+    return await fetch(`${ defaultServer }/status`, { signal: AbortSignal.timeout(5000) })
+      .then(res => ServerStatus.fromCode(res.status))
+      .catch(e => e.message === "signal timed out" ? ServerStatus.STOPPING : ServerStatus.ERROR);
+  }
+
   return (
     <Toolbar>
+      <ServerStatusButton
+        isOpen={ state.serverDialogOpen }
+        onOpenChange={ async (_, data) => {
+          state.update({ serverDialogOpen: data.open });
+          state.update({ serverStatus: data.open ? await getServerStatus() : ServerStatus.LOADING });
+        } }
+        status={ state.serverStatus }
+      />
+
+      <ToolbarDivider/>
+
       <ToolbarButton icon={ <MdCopyAll/> } onClick={ props.onCopy }>Copy URLs</ToolbarButton>
       <ToolbarButton icon={ <MdDeleteForever/> } onClick={ props.onDelete }>Delete URLs</ToolbarButton>
 
@@ -313,6 +335,40 @@ const URLInputField = (props: {
       </Toolbar>
     </StackShim>
   )
+}
+
+const ServerStatusButton = (props: {
+  isOpen: boolean,
+  onOpenChange: DialogOpenChangeEventHandler,
+  status: ServerStatus,
+}) => {
+  return (
+    <Dialog open={ props.isOpen } onOpenChange={ props.onOpenChange }>
+      <DialogTrigger disableButtonEnhancement>
+        <ToolbarButton icon={ <ServerMultipleFilled/> }> Server Status </ToolbarButton>
+      </DialogTrigger>
+      <DialogSurface>
+        <DialogBody>
+          <DialogTitle>Server Status</DialogTitle>
+          <DialogContent>
+            <StackShim tokens={ { childrenGap: 24, padding: "24px 24px 24px 24px" } }>
+              <StackShim tokens={ { childrenGap: 12 } }>
+                <Subtitle2 style={ { width: 48 } }>Server</Subtitle2>
+                <Tag appearance="outline">{ `${ defaultServer }` }</Tag>
+              </StackShim>
+              <StackShim tokens={ { childrenGap: 12 } }>
+                <Subtitle2 style={ { width: 48 } }>Status</Subtitle2>
+                { props.status !== ServerStatus.LOADING
+                  ? <Tag appearance="outline" icon={ props.status.icon }> { props.status.value } </Tag>
+                  : <Spinner size="tiny" style={ { width: 20 } }/>
+                }
+              </StackShim>
+            </StackShim>
+          </DialogContent>
+        </DialogBody>
+      </DialogSurface>
+    </Dialog>
+  );
 }
 
 const GSBDialogButton = (props: {

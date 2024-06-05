@@ -1,4 +1,5 @@
 import {create} from "zustand";
+import {ServerStatus} from "../utils/server.tsx";
 
 export enum Warning {
   Safe, Unknown, Phishing,
@@ -32,7 +33,9 @@ export type UrlInfo = {
 
 type HomeState = {
   urlInfo: UrlInfo[];
+  serverDialogOpen: boolean;
   gsbDialogOpen: boolean;
+  serverStatus: ServerStatus;
 };
 
 type HomeAction = {
@@ -42,7 +45,9 @@ type HomeAction = {
 
 export const defaultHomeState: HomeState = {
   urlInfo: [{ url: "", target: "", warning: { gsb: Warning.Unknown, browser: Warning.Unknown } }],
+  serverDialogOpen: false,
   gsbDialogOpen: false,
+  serverStatus: ServerStatus.LOADING,
 }
 
 export const useHomeState = create<HomeState & HomeAction>((set) => ({
