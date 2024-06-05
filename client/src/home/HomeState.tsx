@@ -1,5 +1,5 @@
 import {create} from "zustand";
-import {ServerStatus} from "../utils/server.tsx";
+import {defaultServer, ServerStatus} from "../utils/server.tsx";
 import {JSX} from "react";
 import {GiFishBucket, GiFishing} from "react-icons/gi";
 import {MdError} from "react-icons/md";
@@ -65,6 +65,7 @@ type HomeState = {
   urlInfo: UrlInfo[];
   serverDialogOpen: boolean;
   gsbDialogOpen: boolean;
+  apiServer: string;
   serverStatus: ServerStatus;
 };
 
@@ -82,6 +83,7 @@ export const defaultHomeState: HomeState = {
   }],
   serverDialogOpen: false,
   gsbDialogOpen: false,
+  apiServer: defaultServer,
   serverStatus: ServerStatus.LOADING,
 }
 

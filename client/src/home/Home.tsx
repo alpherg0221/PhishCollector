@@ -34,7 +34,7 @@ import {
 import {FoodFish20Filled, FoodFishFilled, ServerMultipleFilled} from "@fluentui/react-icons";
 import {InputOnChangeData} from "@fluentui/react-input";
 import {formatURL} from "../utils/url.ts";
-import {MouseEventHandler, useRef} from "react";
+import {MouseEventHandler, useEffect, useRef, useState} from "react";
 import {
   MdAddLink,
   MdClose,
@@ -55,7 +55,7 @@ import {sleep} from "../utils/sleep.ts";
 import {TitleHeader} from "../components/TitleHeader.tsx";
 import {updateArray} from "../utils/extension.ts";
 import {enqueueSnackbar} from "notistack";
-import {defaultServer, ServerStatus} from "../utils/server.tsx";
+import {getApiServer, ServerStatus, setApiServer} from "../utils/server.tsx";
 
 function Home() {
   const state = useHomeState();
@@ -63,7 +63,7 @@ function Home() {
   const scrollBottomRef = useRef<HTMLDivElement>(null);
 
   const getServerStatus = async () => {
-    return await fetch(`${ defaultServer }/status`, { signal: AbortSignal.timeout(5000) })
+    return await fetch(`${ state.apiServer }/status`, { signal: AbortSignal.timeout(5000) })
       .then(res => ServerStatus.fromCode(res.status))
       .catch(e => e.message === "signal timed out" ? ServerStatus.STOPPING : ServerStatus.ERROR);
   }
@@ -114,7 +114,7 @@ function Home() {
       urlInfo: updateArray(state.urlInfo, index, { ...state.urlInfo[index], status: CollectStatus.Collecting }),
     });
 
-    await fetch(`${ defaultServer }/crawler/collect?url=${ url }&target=${ target }&gsb=${ gsb === Warning.Phishing }`).then(async res => await res.text() === "OK"
+    await fetch(`${ state.apiServer }/crawler/collect?url=${ url }&target=${ target }&gsb=${ gsb === Warning.Phishing }`).then(async res => await res.text() === "OK"
       ? state.update({
         urlInfo: updateArray(state.urlInfo, index, { ...state.urlInfo[index], status: CollectStatus.Collected }),
       })
@@ -125,6 +125,10 @@ function Home() {
       urlInfo: updateArray(state.urlInfo, index, { ...state.urlInfo[index], status: CollectStatus.Error }),
     }));
   }
+
+  useEffect(() => {
+    state.update({ apiServer: getApiServer() });
+  }, []);
 
   return (
     <div className="centeringHorizontal" ref={ scrollBottomRef }>
@@ -229,7 +233,6 @@ const ControlButtons = (props: {
           state.update({ serverDialogOpen: data.open });
           state.update({ serverStatus: data.open ? await props.getServerStatus() : ServerStatus.LOADING });
         } }
-        status={ state.serverStatus }
       />
 
       <ToolbarDivider/>
@@ -389,8 +392,11 @@ const URLInputField = (props: {
 const ServerStatusButton = (props: {
   isOpen: boolean,
   onOpenChange: DialogOpenChangeEventHandler,
-  status: ServerStatus,
 }) => {
+  const state = useHomeState();
+
+  const [serverTmp, setServerTmp] = useState(state.apiServer);
+
   return (
     <Dialog open={ props.isOpen } onOpenChange={ props.onOpenChange }>
       <DialogTrigger disableButtonEnhancement>
@@ -403,12 +409,19 @@ const ServerStatusButton = (props: {
             <StackShim tokens={ { childrenGap: 24, padding: "24px 24px 24px 24px" } }>
               <StackShim tokens={ { childrenGap: 12 } }>
                 <Subtitle2 style={ { width: 48 } }>Server</Subtitle2>
-                <Tag appearance="outline">{ `${ defaultServer }` }</Tag>
+                <Input
+                  value={ serverTmp }
+                  onChange={ (_, v) => setServerTmp(v.value) }
+                  contentAfter={ <Button icon={ <MdDoneAll/> } size={ "small" } onClick={ () => {
+                    setApiServer(serverTmp);
+                    state.update({ apiServer: serverTmp });
+                  } }/> }
+                />
               </StackShim>
               <StackShim tokens={ { childrenGap: 12 } }>
                 <Subtitle2 style={ { width: 48 } }>Status</Subtitle2>
-                { props.status !== ServerStatus.LOADING
-                  ? <Tag appearance="outline" icon={ props.status.icon }> { props.status.value } </Tag>
+                { state.serverStatus !== ServerStatus.LOADING
+                  ? <Tag appearance="outline" icon={ state.serverStatus.icon }> { state.serverStatus.value } </Tag>
                   : <Spinner size="tiny" style={ { width: 20 } }/>
                 }
               </StackShim>

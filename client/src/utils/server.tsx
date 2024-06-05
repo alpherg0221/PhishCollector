@@ -3,6 +3,15 @@ import {MdError, MdPlayArrow, MdStop} from "react-icons/md";
 
 const defaultServer = "http://www.az.lab.uec.ac.jp:30080/~ywatanabe/PhishCollector/api";
 
+const getApiServer = () => {
+  const apiServer = localStorage.getItem("apiServer");
+  return apiServer !== null ? apiServer : defaultServer;
+}
+
+const setApiServer = (apiServer: string) => {
+  localStorage.setItem("apiServer", apiServer);
+}
+
 export class ServerStatus {
   public static readonly RUNNING = new ServerStatus("RUNNING", "#00B379", <MdPlayArrow color="#00B379"/>);
   public static readonly STOPPING = new ServerStatus("STOPPING", "#FF0000", <MdStop color="#FF0000"/>);
@@ -42,4 +51,6 @@ export class ServerStatus {
 
 export {
   defaultServer,
+  getApiServer,
+  setApiServer,
 }
