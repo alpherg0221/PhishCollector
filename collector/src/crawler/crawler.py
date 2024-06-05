@@ -69,7 +69,6 @@ async def playwright_main(mobile: str, url: str, target: str, gsb: bool) -> str:
             gsb="YES" if gsb else "NO"
         )
 
-
         # ページの再読み込み
 
         # ページを閉じる

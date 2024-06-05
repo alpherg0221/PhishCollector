@@ -36,7 +36,7 @@ async def stealth(page: Page) -> None:
 
 async def make_info_file(main_path: str, target_url: str, url: str, target: str, gsb: str) -> str:
     # ディレクトリ名：クロールするURLのドメインとする
-    dirname = f'../Saved/{urlparse(url).netloc}'
+    dirname = f'/home/tmp/PhishData/{urlparse(url).netloc}'
     # ファイル名：info.txt
     filename = f'{dirname}/info.txt'
 
