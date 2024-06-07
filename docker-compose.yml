@@ -1,0 +1,19 @@
+services:
+  client:
+    build: client
+    container_name: phish-collector-client
+    ports:
+      - "34173:4173"
+    tty: true
+    stdin_open: true
+
+  collector:
+    build: collector
+    container_name: phish-collector-collector
+    volumes:
+      # - ./collector/src:/home/collector/src # hot-reload用
+      - /home/ywatanabe/PhishData:/home/tmp/PhishData # 後で変える
+    ports:
+      - "30080:8080"
+    tty: true
+    stdin_open: true

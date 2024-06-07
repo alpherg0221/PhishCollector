@@ -14,5 +14,9 @@ RUN curl -sSL https://install.python-poetry.org | python3 -
 ENV PATH=$PATH:/home/collector/.local/bin
 RUN poetry config virtualenvs.in-project true
 
+COPY ./src ./src
+COPY ./pyproject.toml ./pyproject.toml
+RUN poetry install --no-root
+
 COPY ./startup.sh /tmp/startup.sh
 ENTRYPOINT ["/bin/bash", "/tmp/startup.sh"]

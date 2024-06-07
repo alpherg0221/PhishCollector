@@ -24,21 +24,13 @@ import {FoodFishFilled} from "@fluentui/react-icons";
 import {TitleHeader} from "../components/TitleHeader.tsx";
 import {useEffect} from "react";
 import {enqueueSnackbar} from "notistack";
-import {defaultServer} from "../utils/server.tsx";
-
-const downloadData = async (url: string) => {
-  window.open(`${ defaultServer }/collected/download?url=${ url }`, "_blank");
-}
-
-const downloadDataAll = async () => {
-  window.open(`${ defaultServer }/collected/downloadAll`, "_blank");
-}
+import {defaultPath, defaultServer, getApiServer} from "../utils/server.tsx";
 
 function Collected() {
   const state = useCollectedState();
 
   const loadData = async () => {
-    const server = `${ defaultServer }/collected/list`;
+    const server = `${ defaultServer }${ defaultPath }/collected/list`;
     state.update({ phishInfo: [] });
     try {
       const response = await fetch(server, { mode: "cors" });
@@ -54,6 +46,7 @@ function Collected() {
 
   useEffect(() => {
     loadData().then();
+    state.update({ apiServer: getApiServer() });
   }, []);
 
   return (
@@ -68,7 +61,7 @@ function Collected() {
               <ToolbarButton
                 children={ "Download Data" }
                 icon={ <MdDownload/> }
-                onClick={ async () => await downloadDataAll() }
+                onClick={ () => window.open(`${ state.apiServer }${ defaultPath }/collected/downloadAll`, "_blank") }
               />
 
               <ToolbarDivider/>
@@ -130,6 +123,8 @@ const PhishInfoHeader = () => {
 }
 
 const PhishInfoRow = (props: { info: PhishInfo }) => {
+  const state = useCollectedState();
+
   return (
     <StackShim horizontal verticalAlign={ "center" } tokens={ { childrenGap: 24, padding: "0px 48px 0px 48px" } }>
       <Body2 style={ { width: 180 + 18 + 8 } }>{ props.info.date }</Body2>
@@ -152,7 +147,9 @@ const PhishInfoRow = (props: { info: PhishInfo }) => {
         <Button
           icon={ <MdDownload size={ 20 }/> }
           size={ "small" }
-          onClick={ async () => await downloadData(props.info.url) }
+          onClick={ () =>
+            window.open(`${ state.apiServer }${ defaultPath }/collected/download?url=${ props.info.url }`, "_blank")
+          }
         />
       </StackShim>
     </StackShim>

@@ -8,7 +8,6 @@ const outDir = resolve(__dirname, "dist")
 export default defineConfig({
   root,
   plugins: [react()],
-  // base: "/~ywatanabe/PhishCollector/",
   base: "/PhishCollector/",
   build: {
     outDir,
@@ -20,5 +19,8 @@ export default defineConfig({
         settings: resolve(root, "settings", "index.html"),
       }
     }
+  },
+  preview: {
+    host: true
   }
 })
