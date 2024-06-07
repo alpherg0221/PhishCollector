@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from src.routes.crawler import router_crawler
 from src.routes.collected import router_collected
 
-app = FastAPI(root_path="/~ywatanabe/PhishCollector/api")
+app = FastAPI(root_path="/PhishCollector/api")
 
 app.include_router(router_collected, prefix="/collected", tags=["api_collected"])
 app.include_router(router_crawler, prefix="/crawler", tags=["api_crawler"])
