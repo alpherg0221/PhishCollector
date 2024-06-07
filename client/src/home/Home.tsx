@@ -55,7 +55,7 @@ import {sleep} from "../utils/sleep.ts";
 import {TitleHeader} from "../components/TitleHeader.tsx";
 import {updateArray} from "../utils/extension.ts";
 import {enqueueSnackbar} from "notistack";
-import {getApiServer, ServerStatus, setApiServer} from "../utils/server.tsx";
+import {defaultPath, getApiServer, ServerStatus, setApiServer} from "../utils/server.tsx";
 
 function Home() {
   const state = useHomeState();
@@ -63,7 +63,7 @@ function Home() {
   const scrollBottomRef = useRef<HTMLDivElement>(null);
 
   const getServerStatus = async () => {
-    return await fetch(`${ state.apiServer }/status`, { signal: AbortSignal.timeout(5000) })
+    return await fetch(`${ state.apiServer }${ defaultPath }/status`, { signal: AbortSignal.timeout(5000) })
       .then(res => ServerStatus.fromCode(res.status))
       .catch(e => e.message === "signal timed out" ? ServerStatus.STOPPING : ServerStatus.ERROR);
   }
@@ -114,7 +114,7 @@ function Home() {
       urlInfo: updateArray(state.urlInfo, index, { ...state.urlInfo[index], status: CollectStatus.Collecting }),
     });
 
-    await fetch(`${ state.apiServer }/crawler/collect?url=${ url }&target=${ target }&gsb=${ gsb === Warning.Phishing }`).then(async res => await res.text() === "OK"
+    await fetch(`${ state.apiServer }${ defaultPath }/crawler/collect?url=${ url }&target=${ target }&gsb=${ gsb === Warning.Phishing }`).then(async res => await res.text() === "OK"
       ? state.update({
         urlInfo: updateArray(state.urlInfo, index, { ...state.urlInfo[index], status: CollectStatus.Collected }),
       })

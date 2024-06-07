@@ -1,4 +1,5 @@
 import {create} from "zustand";
+import {defaultServer, ServerStatus} from "../utils/server.tsx";
 
 export type PhishInfo = {
   url: string,
@@ -9,6 +10,8 @@ export type PhishInfo = {
 
 type CollectedState = {
   phishInfo: PhishInfo[];
+  apiServer: string;
+  serverStatus: ServerStatus;
 };
 
 type CollectedAction = {
@@ -18,6 +21,8 @@ type CollectedAction = {
 
 export const defaultCollectedState: CollectedState = {
   phishInfo: [],
+  apiServer: defaultServer,
+  serverStatus: ServerStatus.LOADING,
 }
 
 export const useCollectedState = create<CollectedState & CollectedAction>((set) => ({

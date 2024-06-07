@@ -1,7 +1,8 @@
 import {JSX} from "react";
 import {MdError, MdPlayArrow, MdStop} from "react-icons/md";
 
-const defaultServer = "http://www.az.lab.uec.ac.jp:30080/~ywatanabe/PhishCollector/api";
+const defaultServer = "http://www.az.lab.uec.ac.jp:30080";
+const defaultPath = "/~ywatanabe/PhishCollector/api"
 
 const getApiServer = () => {
   const apiServer = localStorage.getItem("apiServer");
@@ -51,6 +52,7 @@ export class ServerStatus {
 
 export {
   defaultServer,
+  defaultPath,
   getApiServer,
   setApiServer,
 }
