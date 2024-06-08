@@ -6,8 +6,6 @@ import {
   UrlInfo,
   useHomeState,
   Warning,
-  warningNextTo,
-  warningOrder
 } from "./HomeState.tsx";
 import {StackShim} from "@fluentui/react-migration-v8-v9";
 import {
@@ -31,7 +29,7 @@ import {
   ToolbarDivider,
   Tooltip
 } from "@fluentui/react-components";
-import {FoodFish20Filled, FoodFishFilled, ServerMultipleFilled} from "@fluentui/react-icons";
+import {FoodFish20Filled, ServerMultipleFilled} from "@fluentui/react-icons";
 import {InputOnChangeData} from "@fluentui/react-input";
 import {formatURL} from "../utils/url.ts";
 import {MouseEventHandler, useEffect, useRef, useState} from "react";
@@ -43,11 +41,9 @@ import {
   MdCrisisAlert,
   MdDeleteForever,
   MdDoneAll,
-  MdHelp,
   MdOpenInNew,
   MdSecurity,
   MdTravelExplore,
-  MdVerified
 } from "react-icons/md";
 import {DialogOpenChangeEventHandler} from "@fluentui/react-dialog";
 import {checkGSB} from "../utils/gsb.ts";
@@ -190,7 +186,7 @@ function Home() {
                 urlInfo: updateArray(
                   state.urlInfo,
                   index,
-                  { ...info, warning: { ...info.warning, browser: warningNextTo(info.warning.browser) } }
+                  { ...info, warning: { ...info.warning, browser: info.warning.browser.next } }
                 )
               }) }
               onCollectClick={ async () => await collectPhish(index, info.url, info.target, info.warning.browser) }
@@ -271,10 +267,10 @@ const SortableTitle = (props: { width: string, children: string, sortBy?: SortBy
           state.update({ urlInfo: state.urlInfo.toSorted((a, b) => a.target.localeCompare(b.target)) });
           break;
         case SortBy.GSB:
-          state.update({ urlInfo: state.urlInfo.toSorted((a, b) => warningOrder.indexOf(a.warning.gsb) - warningOrder.indexOf(b.warning.gsb)) });
+          state.update({ urlInfo: state.urlInfo.toSorted((a, b) => a.warning.gsb.order - b.warning.gsb.order) });
           break;
         case SortBy.Browser:
-          state.update({ urlInfo: state.urlInfo.toSorted((a, b) => warningOrder.indexOf(a.warning.browser) - warningOrder.indexOf(b.warning.browser)) });
+          state.update({ urlInfo: state.urlInfo.toSorted((a, b) => a.warning.browser.order - b.warning.browser.order) });
           break;
       }
     } }>
@@ -459,18 +455,12 @@ const GSBDialogButton = (props: {
 }
 
 const WarningStatus = (props: { status: Warning, onChange?: MouseEventHandler }) => {
-  const items = {
-    [Warning.Safe]: { icon: <MdVerified/>, style: { color: "#00B379" } },
-    [Warning.Unknown]: { icon: <MdHelp/>, style: {} },
-    [Warning.Phishing]: { icon: <FoodFishFilled/>, style: { color: "#FF0000" } },
-  };
-
   return (
     <Button
       appearance={ "outline" }
-      icon={ items[props.status].icon }
+      icon={ props.status.icon }
       size={ "large" }
-      style={ items[props.status].style }
+      style={ { color: props.status.color } }
       onClick={ props.onChange }
     />
   );
