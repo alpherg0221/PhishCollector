@@ -23,10 +23,10 @@ export class ServerStatus {
     switch (statusCode) {
       case 200:
         return ServerStatus.RUNNING;
-      case 404:
-        return ServerStatus.STOPPING;
-      default:
+      case 500:
         return ServerStatus.ERROR;
+      default:
+        return ServerStatus.STOPPING;
     }
   }
 

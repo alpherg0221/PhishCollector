@@ -23,29 +23,13 @@ import {
 import {FoodFishFilled} from "@fluentui/react-icons";
 import {TitleHeader} from "../components/TitleHeader.tsx";
 import {useEffect} from "react";
-import {enqueueSnackbar} from "notistack";
-import {defaultPath, defaultServer, getApiServer} from "../utils/server.tsx";
+import {defaultPath, getApiServer} from "../utils/server.tsx";
 
 function Collected() {
   const state = useCollectedState();
 
-  const loadData = async () => {
-    const server = `${ defaultServer }${ defaultPath }/collected/list`;
-    state.update({ phishInfo: [] });
-    try {
-      const response = await fetch(server, { mode: "cors" });
-      const phishInfo: PhishInfo[] = await response.json();
-      state.update({ phishInfo: phishInfo.toSorted((a, b) => -a.date.localeCompare(b.date)) });
-    } catch {
-      enqueueSnackbar("Failed to load data", {
-        variant: "error",
-        anchorOrigin: { vertical: "bottom", horizontal: "center" },
-      });
-    }
-  }
-
   useEffect(() => {
-    loadData().then();
+    state.loadData().then();
     state.update({ apiServer: getApiServer() });
   }, []);
 
@@ -69,7 +53,7 @@ function Collected() {
               <ToolbarButton
                 children={ "Refresh" }
                 icon={ <MdRefresh/> }
-                onClick={ async () => await loadData() }
+                onClick={ async () => await state.loadData() }
               />
             </Toolbar>
           </StackShim>
