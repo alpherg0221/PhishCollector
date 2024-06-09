@@ -51,10 +51,7 @@ export const checkGSB = async (urlInfo: UrlInfo[]) => {
   console.log(gsbResponse);
 
   return urlInfo.map(urlInfo => ({
-    url: urlInfo.url,
-    warning: {
-      gsb: gsbResponse.matches?.map(match => match.threat.url).includes(urlInfo.url) ? Warning.Phishing : Warning.Safe,
-      browser: urlInfo.warning.browser,
-    }
+    ...urlInfo,
+    warningGSB: gsbResponse.matches?.map(match => match.threat.url).includes(urlInfo.url) ? Warning.Phishing : Warning.Safe,
   }) as UrlInfo);
 }

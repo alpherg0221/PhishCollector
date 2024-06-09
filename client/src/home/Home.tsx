@@ -1,7 +1,6 @@
 import './Home.css'
 import {
   CollectStatus,
-  defaultHomeState,
   SortBy,
   UrlInfo,
   useHomeState,
@@ -30,8 +29,6 @@ import {
   Tooltip
 } from "@fluentui/react-components";
 import {FoodFish20Filled, ServerMultipleFilled} from "@fluentui/react-icons";
-import {InputOnChangeData} from "@fluentui/react-input";
-import {formatURL} from "../utils/url.ts";
 import {MouseEventHandler, useEffect, useRef, useState} from "react";
 import {
   MdAddLink,
@@ -46,84 +43,18 @@ import {
   MdTravelExplore,
 } from "react-icons/md";
 import {DialogOpenChangeEventHandler} from "@fluentui/react-dialog";
-import {checkGSB} from "../utils/gsb.ts";
 import {sleep} from "../utils/sleep.ts";
 import {TitleHeader} from "../components/TitleHeader.tsx";
-import {updateArray} from "../utils/extension.ts";
 import {enqueueSnackbar} from "notistack";
-import {defaultPath, getApiServer, ServerStatus, setApiServer} from "../utils/server.tsx";
+import {ServerStatus} from "../utils/server.tsx";
 
 function Home() {
   const state = useHomeState();
 
   const scrollBottomRef = useRef<HTMLDivElement>(null);
 
-  const getServerStatus = async () => {
-    return await fetch(`${ state.apiServer }${ defaultPath }/status`, { signal: AbortSignal.timeout(5000) })
-      .then(res => ServerStatus.fromCode(res.status))
-      .catch(e => e.message === "signal timed out" ? ServerStatus.STOPPING : ServerStatus.ERROR);
-  }
-
-  const onURLChange = (idx: number, data: InputOnChangeData) => {
-    // 新しい状態の作成
-    const newUrlInfo = state.urlInfo
-      .map((info, index) => index === idx ? { ...info, url: data.value } : info) // 値の更新
-      .map(info => ({ ...info, url: formatURL(info.url) }) as UrlInfo)  // URLを整形
-
-    // 状態を更新
-    state.update({ urlInfo: newUrlInfo });
-  }
-
-  const onURLPaste = (idx: number, data: string) => {
-    // 複数URLを分割してUrlInfoに変換
-    // eslint-disable-next-line no-control-regex
-    const urlInfo = data.split(RegExp(" |\r|\n|\r\n")).map(url => ({
-      url: url,
-      target: "",
-      warning: { gsb: Warning.Unknown, browser: Warning.Unknown },
-      status: CollectStatus.NotCollected,
-    } as UrlInfo));
-
-    // 新しい状態の作成
-    const newUrlInfo = [...state.urlInfo.map((info, index) => index === idx ? urlInfo[0] : info), ...urlInfo.slice(1)] // 値の更新と追加
-      .map(info => ({ ...info, url: formatURL(info.url) }) as UrlInfo)  // URLを整形
-      .filter(info => info.url.includes("http") || RegExp("[A-Za-z]+.[A-Za-z]+").test(info.url))  // URL以外を除去
-      .map(info => ({ ...info, url: !info.url.includes("http") ? `https://${ info.url }` : info.url }) as UrlInfo);  // httpsを追加
-
-    // 状態を更新
-    state.update({ urlInfo: newUrlInfo });
-  }
-
-  const onTargetChange = (idx: number, data: InputProps) => {
-    state.update({
-      urlInfo: state.urlInfo.map((info, index) => ({
-        ...info,
-        target: index === idx ? data.value : info.target,
-      }) as UrlInfo),
-    })
-  }
-
-  const collectPhish = async (index: number, url: string, target: string, gsb: Warning) => {
-    if (gsb === Warning.Unknown) return;
-
-    state.update({
-      urlInfo: updateArray(state.urlInfo, index, { ...state.urlInfo[index], status: CollectStatus.Collecting }),
-    });
-
-    await fetch(`${ state.apiServer }${ defaultPath }/crawler/collect?url=${ url }&target=${ target }&gsb=${ gsb === Warning.Phishing }`).then(async res => await res.text() === "OK"
-      ? state.update({
-        urlInfo: updateArray(state.urlInfo, index, { ...state.urlInfo[index], status: CollectStatus.Collected }),
-      })
-      : state.update({
-        urlInfo: updateArray(state.urlInfo, index, { ...state.urlInfo[index], status: CollectStatus.Error }),
-      })
-    ).catch(() => state.update({
-      urlInfo: updateArray(state.urlInfo, index, { ...state.urlInfo[index], status: CollectStatus.Error }),
-    }));
-  }
-
   useEffect(() => {
-    state.update({ apiServer: getApiServer() });
+    state.updateApiServer();
   }, []);
 
   return (
@@ -146,7 +77,6 @@ function Home() {
               } }
               onDelete={ () => state.reset() }
               onOpenAll={ () => state.urlInfo.forEach(info => window.open(info.url, "_blank")) }
-              getServerStatus={ getServerStatus }
             />
           </StackShim>
 
@@ -173,24 +103,16 @@ function Home() {
               key={ `urlInputField${ index }` }
               urlInfo={ info }
               index={ index }
-              onUrlChange={ (_, data) => onURLChange(index, data) }
+              onUrlChange={ (_, data) => state.changeUrl(index, data.value) }
               onUrlPaste={ (ev) => {
                 ev.preventDefault();
-                onURLPaste(index, ev.clipboardData.getData("text"));
+                state.pasteUrl(index, ev.clipboardData.getData("text"));
               } }
-              onTargetChange={ (_, data) => onTargetChange(index, data) }
-              onFillClick={ () => state.update({
-                urlInfo: state.urlInfo.map((info) => ({ ...info, target: state.urlInfo[index].target }) as UrlInfo)
-              }) }
-              onBrowserChangeClick={ () => state.update({
-                urlInfo: updateArray(
-                  state.urlInfo,
-                  index,
-                  { ...info, warning: { ...info.warning, browser: info.warning.browser.next } }
-                )
-              }) }
-              onCollectClick={ async () => await collectPhish(index, info.url, info.target, info.warning.browser) }
-              onDeleteClick={ () => state.update({ urlInfo: state.urlInfo.filter((_, idx) => idx !== index) }) }
+              onTargetChange={ (_, data) => state.changeTarget(index, data.value) }
+              onFillClick={ () => state.fillTarget(index) }
+              onBrowserChangeClick={ () => state.changeBrowserWarning(index) }
+              onCollectClick={ async () => await state.collectPhish(index) }
+              onDeleteClick={ () => state.deleteUrlInfo(index) }
             />
           ) }
         </StackShim>
@@ -201,7 +123,7 @@ function Home() {
           children={ "Add URL" }
           icon={ <MdAddLink/> }
           onClick={ async () => {
-            state.update({ urlInfo: [...state.urlInfo, ...defaultHomeState.urlInfo] });
+            state.addUrlInfo();
             await sleep(1);
             scrollBottomRef?.current?.scrollIntoView({ behavior: "smooth", block: "end" });
           } }
@@ -217,7 +139,6 @@ const ControlButtons = (props: {
   onCopy: MouseEventHandler,
   onDelete: MouseEventHandler,
   onOpenAll: MouseEventHandler,
-  getServerStatus: () => Promise<ServerStatus>,
 }) => {
   const state = useHomeState();
 
@@ -226,8 +147,8 @@ const ControlButtons = (props: {
       <ServerStatusButton
         isOpen={ state.serverDialogOpen }
         onOpenChange={ async (_, data) => {
-          state.update({ serverDialogOpen: data.open });
-          state.update({ serverStatus: data.open ? await props.getServerStatus() : ServerStatus.LOADING });
+          data.open ? state.openServerDialog() : state.closeServerDialog();
+          await state.updateServerStatus();
         } }
       />
 
@@ -240,10 +161,10 @@ const ControlButtons = (props: {
 
       <GSBDialogButton
         isOpen={ state.gsbDialogOpen }
-        onOpenChange={ (_, data) => state.update({ gsbDialogOpen: data.open }) }
+        onOpenChange={ (_, data) => data.open ? state.openGSBDialog() : state.closeGSBDialog() }
         onCheck={ async () => {
-          state.update({ gsbDialogOpen: false });
-          state.update({ urlInfo: await checkGSB(state.urlInfo) });
+          state.openGSBDialog();
+          await state.checkGSB();
         } }
       />
 
@@ -258,22 +179,10 @@ const SortableTitle = (props: { width: string, children: string, sortBy?: SortBy
   const state = useHomeState();
 
   return (
-    <Body1Strong style={ { width: props.width, textAlign: "center", cursor: "pointer" } } onClick={ () => {
-      switch (props.sortBy) {
-        case SortBy.Url:
-          state.update({ urlInfo: state.urlInfo.toSorted((a, b) => a.url.localeCompare(b.url)) });
-          break;
-        case SortBy.Target:
-          state.update({ urlInfo: state.urlInfo.toSorted((a, b) => a.target.localeCompare(b.target)) });
-          break;
-        case SortBy.GSB:
-          state.update({ urlInfo: state.urlInfo.toSorted((a, b) => a.warning.gsb.order - b.warning.gsb.order) });
-          break;
-        case SortBy.Browser:
-          state.update({ urlInfo: state.urlInfo.toSorted((a, b) => a.warning.browser.order - b.warning.browser.order) });
-          break;
-      }
-    } }>
+    <Body1Strong
+      style={ { width: props.width, textAlign: "center", cursor: "pointer" } }
+      onClick={ () => props.sortBy ? state.sortUrlInfo(props.sortBy) : undefined }
+    >
       { props.children }
     </Body1Strong>
   )
@@ -340,11 +249,11 @@ const URLInputField = (props: {
       />
 
       <Toolbar>
-        <WarningStatus status={ props.urlInfo.warning.gsb }/>
+        <WarningStatus status={ props.urlInfo.warningGSB }/>
 
         <ToolbarDivider/>
 
-        <WarningStatus status={ props.urlInfo.warning.browser } onChange={ props.onBrowserChangeClick }/>
+        <WarningStatus status={ props.urlInfo.warningBrowser } onChange={ props.onBrowserChangeClick }/>
 
         <ToolbarDivider/>
 
@@ -409,8 +318,7 @@ const ServerStatusButton = (props: {
                   value={ serverTmp }
                   onChange={ (_, v) => setServerTmp(v.value) }
                   contentAfter={ <Button icon={ <MdDoneAll/> } size={ "small" } onClick={ () => {
-                    setApiServer(serverTmp);
-                    state.update({ apiServer: serverTmp });
+                    state.updateApiServer(serverTmp);
                   } }/> }
                 />
               </StackShim>
