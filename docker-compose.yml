@@ -12,7 +12,7 @@ services:
     container_name: phish-collector-collector
     volumes:
       # - ./collector/src:/home/collector/src # hot-reload用
-      - /home/ywatanabe/PhishData:/home/tmp/PhishData # 後で変える
+      - ${PHISH_COLLECTOR_SAVE_DIR}:/home/tmp/PhishData
     ports:
       - "30080:8080"
     tty: true
