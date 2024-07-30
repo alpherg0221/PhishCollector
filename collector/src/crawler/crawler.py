@@ -11,6 +11,37 @@ locale = "ja"
 mobile_ua = "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Mobile Safari/537.36"
 
 
+async def playwright_main_with_gsb_check(mobile: str, url: str, target: str) -> bytes:
+    # GSB確認処理
+    async with async_playwright() as playwright:
+        browser = await playwright.chromium.launch(
+            channel="chrome",
+            headless=True,
+            args=["--disable-blink-features=AutomationControlled"],
+        )
+        context = await browser.new_context(
+            ignore_https_errors=True,
+            java_script_enabled=True,
+            locale=locale,
+        )
+
+        # 新しいページを開く
+        page = await context.new_page()
+
+        # 検知回避策
+        await stealth_async(page)
+        await stealth(page)
+
+        # URLに移動
+        await page.goto(url)
+        # ページ全体が読み込まれるまで待つ
+        await page.wait_for_timeout(1000)
+        # ページのスクリーンショットを撮影
+        screenshot = await page.screenshot()
+
+    return screenshot
+
+
 async def playwright_main(mobile: str, url: str, target: str, gsb: bool) -> str:
     async with async_playwright() as playwright:
         # 実際のchromeを使用、Headlessモードで起動、navigator.webdriver=falseに設定
