@@ -11,9 +11,12 @@ services:
     build: collector
     container_name: phish-collector-collector
     volumes:
-      # - ./collector/src:/home/collector/src # hot-reload用
+      - ./collector/src:/home/collector/src # hot-reload用
+      - ./Profile:/home/collector/profile # chromeのprofile用
       - ${PHISH_COLLECTOR_SAVE_DIR}:/home/tmp/PhishData
     ports:
       - "30080:8080"
     tty: true
     stdin_open: true
+    environment:
+      TZ: Asia/Tokyo
